@@ -5,7 +5,7 @@ import capitalize from 'lodash.capitalize';
 // Authors not in this map will be ignored
 const AUTHOR_MAP: Record<string, {nickname: string}> = {
     'matej.minar@sentry.io': {
-        nickname: 'Matej',
+        nickname: 'Ma-tay',
     },
     'ognjen.bostjancic@sentry.io': {
         nickname: 'Ogi',
