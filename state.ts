@@ -6,12 +6,15 @@ const DB_FILENAME = ".db";
 export async function init(): Promise<void> {
   try {
     await fs.readFile(DB_FILENAME, "utf-8");
+    if (process.env.NODE_ENV === "dev") {
+      await wipe();
+    }
   } catch (e) {
     await wipe();
   }
 }
 
-export async function wipe(): Promise<void> {
+async function wipe(): Promise<void> {
   await fs.writeFile(".db", JSON.stringify({ releases: {} }));
 }
 
@@ -28,7 +31,7 @@ async function saveReleases(releases: Release[]): Promise<void> {
   const dbReleases = await getReleasesFromDb();
 
   for (const release of releases) {
-    dbReleases[release.id] = release;
+    dbReleases[release.versionInfo.buildHash] = release;
   }
 
   await fs.writeFile(".db", JSON.stringify({ releases: dbReleases }));

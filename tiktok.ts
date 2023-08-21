@@ -142,7 +142,6 @@ function sleep(ms) {
  * @param {string} audioDirPath audioDirPath
  */
 export async function textToSpeechIt(voice, text, textDirPath, audioDirPath) {
-  console.log('this');
   if (!voice || !AVAILABLE_VOICES.includes(voice))
     throw "A valid voice must be passed. Look at AVAILABLE_VOICES to set the desired voice.";
 

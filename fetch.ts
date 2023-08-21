@@ -1,8 +1,14 @@
 import { Commit, Release } from "./types";
 import { state } from "./state";
+import axios, { AxiosRequestConfig } from "axios";
 
 const BASE_URL = "https://sentry.sentry.io/api/0";
 const RECENT_THRESHOLD = 1000 * 30; // 30 seconds
+
+const PROJECT_IDS = [
+  1, //sentry backend
+  11276, // javascript frontend
+];
 
 interface SentryCommit extends Commit {
   pullRequest: {
@@ -27,40 +33,59 @@ export async function getNewCommits(): Promise<Commit[]> {
 
 async function getNewReleases(): Promise<Release[]> {
   try {
-    const res = await authFetch(`${BASE_URL}/organizations/sentry/releases/`);
-    const releases: Release[] = await res.json();
+    const { data: releases } = await get(
+      `${BASE_URL}/organizations/sentry/releases/`,
+      {
+        params: {
+          per_page: 30,
+          sort: "date",
+          status: "open",
+          project: PROJECT_IDS,
+        },
+      }
+    );
 
-    const relevantReleases = releases.filter(isRelevantRelease);
-    // .filter(isRecentlyCreated);
+    const relevantReleases = releases
+      .filter(isRelevantRelease)
+      .filter(isRecentlyCreated);
     const previousReleases = await state.releases.getAll();
 
     const newReleases = relevantReleases.filter(
-      (r) => previousReleases[r.id] === undefined
+      (r: Release) => previousReleases[r.id] === undefined
     );
 
     return newReleases;
   } catch (e) {
-    console.error(e);
+    console.error(
+      "Error fetching releases",
+      // @ts-expect-error Axios errors
+      e.response.data.detail || e.response.data || e.message
+    );
     return [];
   }
 }
 
 async function getCommitsForRelease(release: Release): Promise<SentryCommit[]> {
   try {
-    const res = await authFetch(
+    const res = await get(
       `${BASE_URL}/projects/sentry/sentry/releases/${release.version}/commits/`
     );
-    const commits = await res.json();
 
-    return commits;
+    return res.data;
   } catch (e) {
-    console.error(e);
+    console.error(
+      "Error fetching commits of release",
+      release.version,
+      // @ts-expect-error Axios errors
+      e.response.data.detail || e.response.data || e.message
+    );
     return [];
   }
 }
 
-function authFetch(url: string): Promise<Response> {
-  return fetch(url, {
+function get(url: string, config?: AxiosRequestConfig) {
+  return axios.get(url, {
+    ...config,
     headers: {
       Authorization: `Bearer ${process.env.SENTRY_TOKEN}`,
     },
@@ -70,12 +95,11 @@ function authFetch(url: string): Promise<Response> {
 function isRelevantRelease(release: Release): boolean {
   return (
     // isRecentlyCreated(release) &&
-    release.status === "open" &&
     release.commitCount > 0 &&
     release.authors.length > 0 &&
     release.deployCount > 0 &&
     release.lastDeploy.environment === "prod" &&
-    release.versionInfo.package === "backend"
+    ["frontend", "backend"].includes(release.versionInfo.package)
   );
 }
 
@@ -83,6 +107,10 @@ function isRecentlyCreated(
   release: Release,
   threshold = RECENT_THRESHOLD
 ): boolean {
+  if (process.env.NODE_ENV === "dev") {
+    return true;
+  }
+
   const created = new Date(release.dateCreated);
   const now = new Date();
 
