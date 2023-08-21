@@ -7,7 +7,7 @@ const RECENT_THRESHOLD = 1000 * 30; // 30 seconds
 
 const PROJECT_IDS = [
   1, //sentry backend
-  1127, // javascript frontend
+  11276, // javascript frontend
 ];
 
 interface SentryCommit extends Commit {
@@ -37,6 +37,9 @@ async function getNewReleases(): Promise<Release[]> {
       `${BASE_URL}/organizations/sentry/releases/`,
       {
         params: {
+          per_page: 30,
+          sort: "date",
+          status: "open",
           project: PROJECT_IDS,
         },
       }
@@ -53,7 +56,11 @@ async function getNewReleases(): Promise<Release[]> {
 
     return newReleases;
   } catch (e) {
-    console.error(e);
+    console.error(
+      "Error fetching releases",
+      // @ts-expect-error Axios errors
+      e.response.data.detail || e.response.data || e.message
+    );
     return [];
   }
 }
@@ -66,7 +73,12 @@ async function getCommitsForRelease(release: Release): Promise<SentryCommit[]> {
 
     return res.data;
   } catch (e) {
-    console.error(e);
+    console.error(
+      "Error fetching commits of release",
+      release.version,
+      // @ts-expect-error Axios errors
+      e.response.data.detail || e.response.data || e.message
+    );
     return [];
   }
 }
@@ -83,12 +95,11 @@ function get(url: string, config?: AxiosRequestConfig) {
 function isRelevantRelease(release: Release): boolean {
   return (
     // isRecentlyCreated(release) &&
-    release.status === "open" &&
     release.commitCount > 0 &&
     release.authors.length > 0 &&
     release.deployCount > 0 &&
     release.lastDeploy.environment === "prod" &&
-    release.versionInfo.package === "backend"
+    ["frontend", "backend"].includes(release.versionInfo.package)
   );
 }
 

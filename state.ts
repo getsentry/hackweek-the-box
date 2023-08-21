@@ -31,7 +31,7 @@ async function saveReleases(releases: Release[]): Promise<void> {
   const dbReleases = await getReleasesFromDb();
 
   for (const release of releases) {
-    dbReleases[release.id] = release;
+    dbReleases[release.versionInfo.buildHash] = release;
   }
 
   await fs.writeFile(".db", JSON.stringify({ releases: dbReleases }));
