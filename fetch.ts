@@ -30,9 +30,8 @@ async function getNewReleases(): Promise<Release[]> {
     const res = await authFetch(`${BASE_URL}/organizations/sentry/releases/`);
     const releases: Release[] = await res.json();
 
-    const relevantReleases = releases
-      .filter(isRelevantRelease)
-      .filter(isRecentlyCreated);
+    const relevantReleases = releases.filter(isRelevantRelease);
+    // .filter(isRecentlyCreated);
     const previousReleases = await state.releases.getAll();
 
     const newReleases = relevantReleases.filter(
