@@ -48,3 +48,4 @@ export interface VersionInfo {
 export interface Version {
   raw: string;
 }
+
