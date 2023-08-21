@@ -4,8 +4,6 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-console.log("helloo");
-
 const main = async () => {
   await init();
 

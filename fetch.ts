@@ -30,7 +30,9 @@ async function getNewReleases(): Promise<Release[]> {
     const res = await authFetch(`${BASE_URL}/organizations/sentry/releases/`);
     const releases: Release[] = await res.json();
 
-    const relevantReleases = releases.filter(isRelevantRelease);
+    const relevantReleases = releases
+      .filter(isRelevantRelease)
+      .filter(isRecentlyCreated);
     const previousReleases = await state.releases.getAll();
 
     const newReleases = relevantReleases.filter(
@@ -78,13 +80,16 @@ function isRelevantRelease(release: Release): boolean {
   );
 }
 
-function isRecentlyCreated(release: Release): boolean {
+function isRecentlyCreated(
+  release: Release,
+  threshold = RECENT_THRESHOLD
+): boolean {
   const created = new Date(release.dateCreated);
   const now = new Date();
 
   const diff = now.getTime() - created.getTime();
 
-  return diff < RECENT_THRESHOLD;
+  return diff < threshold;
 }
 
 function transformCommit(commit: SentryCommit): Commit {

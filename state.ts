@@ -1,9 +1,11 @@
 import { promises as fs } from "fs";
 import { Release } from "./types";
 
+const DB_FILENAME = ".db";
+
 export async function init(): Promise<void> {
   try {
-    await fs.readFile(".db", "utf-8");
+    await fs.readFile(DB_FILENAME, "utf-8");
   } catch (e) {
     await wipe();
   }
@@ -14,7 +16,7 @@ export async function wipe(): Promise<void> {
 }
 
 async function getReleasesFromDb(): Promise<Record<string, Release>> {
-  const db = await fs.readFile(".db", "utf-8");
+  const db = await fs.readFile(DB_FILENAME, "utf-8");
   return JSON.parse(db).releases;
 }
 
