@@ -6,7 +6,8 @@
   "scripts": {
     "build": "npx tsc",
     "start": "node dist/index.js",
-    "dev": "concurrently \"npx tsc --watch\" \"nodemon -q dist/index.js\""
+    "dev": "concurrently \"npx tsc --watch\" \"nodemon -q dist/index.js\"",
+    "dev:debug": "nodemon ./index.ts"
   },
   "repository": {
     "type": "git",
@@ -25,10 +26,14 @@
     "@types/node": "^20.5.1",
     "concurrently": "^8.2.0",
     "nodemon": "^3.0.1",
+    "ts-node": "^10.9.1",
     "typescript": "^5.1.6"
   },
   "dependencies": {
     "conventional-commits-parser": "^4.0.0",
-    "lodash.capitalize": "^4.2.1"
+    "cross-fetch": "^4.0.0",
+    "dotenv": "^16.3.1",
+    "lodash.capitalize": "^4.2.1",
+    "node-fetch": "^3.3.2"
   }
 }
