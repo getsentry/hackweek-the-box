@@ -18,16 +18,7 @@ export function getPlayConfig(
   }
 
   const playConfig = matchingRules.reduce((acc, rule) => {
-    if (rule.play.nickname) {
-      acc.nickname = rule.play.nickname;
-    }
-    if (rule.play.sound) {
-      acc.sound = rule.play.sound;
-    }
-    if (rule.play.voice) {
-      acc.voice = rule.play.voice;
-    }
-    return acc;
+    return { ...acc, ...rule.play };
   }, getDefaultConfig(commit));
 
   return playConfig;
