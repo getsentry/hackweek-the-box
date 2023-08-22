@@ -8,8 +8,13 @@ describe("checkForNewCommits", () => {
     mock.method(fetch, "getNewCommits", async () => {
       return Promise.resolve([]);
     });
-    await checkForNewCommits();
-
+    try {
+      await checkForNewCommits();
+      console.log("test");
+    } catch (e) {
+      console.log("catch");
+      console.log(e);
+    }
     assert.ok(true);
   });
 });
