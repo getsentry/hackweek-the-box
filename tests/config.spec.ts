@@ -58,7 +58,7 @@ describe("getPlayConfig", () => {
     const config = getPlayConfig(commit, rules);
 
     assert.equal(config?.nickname, "Nickname");
-    assert.equal(config?.voice, "voice");
+    assert.equal(config?.voice, Voice.en_au_001);
   });
 
   it("should return nothing", () => {

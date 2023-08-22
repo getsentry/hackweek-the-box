@@ -1,6 +1,6 @@
 import conventionalCommitsParser from "conventional-commits-parser";
 import { Commit, PlayConfig, Rule } from "./types";
-import { randomSound, randomVoice } from "./audio";
+import { getCommitSound, randomVoice } from "./audio";
 
 /*
  * This function takes a commit and a list of rules and returns a PlayConfig
@@ -17,12 +17,6 @@ export function getPlayConfig(
     return;
   }
 
-  const defaultPlayConfig: PlayConfig = {
-    nickname: commit.author.name,
-    sound: randomSound(),
-    voice: randomVoice(),
-  };
-
   const playConfig = matchingRules.reduce((acc, rule) => {
     if (rule.play.nickname) {
       acc.nickname = rule.play.nickname;
@@ -34,7 +28,7 @@ export function getPlayConfig(
       acc.voice = rule.play.voice;
     }
     return acc;
-  }, defaultPlayConfig);
+  }, getDefaultConfig(commit));
 
   return playConfig;
 }
@@ -47,4 +41,14 @@ function matches({ author, message }: Commit, { match }: Rule) {
   const matchScope = match.scope ? match.scope === scope : true;
 
   return matchAuthor && matchType && matchScope;
+}
+
+function getDefaultConfig({ author, message }: Commit): PlayConfig {
+  const { type } = conventionalCommitsParser.sync(message);
+
+  return {
+    nickname: author.name,
+    sound: getCommitSound(type as string),
+    voice: randomVoice(),
+  };
 }

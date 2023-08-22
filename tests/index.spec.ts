@@ -3,11 +3,13 @@ import * as fetch from "../src/fetch";
 import { describe, it, mock } from "node:test";
 import { checkForNewCommits } from "../src/index";
 
-describe("checkForNewCommits", (a) => {
-  // it("test", async () => {
-  //   mock.fn(checkForNewCommits, () => {
-  //     return Promise.resolve([]);
-  //   });
-  //   await checkForNewCommits();
-  // });
+describe("checkForNewCommits", () => {
+  it("test", async () => {
+    mock.method(fetch, "getNewCommits", async () => {
+      return Promise.resolve([]);
+    });
+    await checkForNewCommits();
+
+    assert.ok(true);
+  });
 });
