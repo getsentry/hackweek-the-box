@@ -1,5 +1,5 @@
-export const sleep = (seconds: number) =>
-  new Promise((resolve) => setTimeout(resolve, seconds * 1000));
+export const sleep = (miliseconds: number) =>
+  new Promise((resolve) => setTimeout(resolve, miliseconds));
 
 export const runEvery = (seconds: number, fn: () => void) => {
   fn();

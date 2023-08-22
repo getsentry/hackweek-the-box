@@ -6,8 +6,9 @@
   "scripts": {
     "build": "npx tsc",
     "start": "node dist/index.js",
+    "test": "node --test --require ts-node/register ./tests/*spec.ts",
     "dev": "concurrently \"npx tsc --watch\" \"nodemon -q dist/index.js\"",
-    "dev:debug": "nodemon ./index.ts"
+    "dev:debug": "nodemon ./src/index.ts"
   },
   "repository": {
     "type": "git",
@@ -25,7 +26,6 @@
     "@types/conventional-commits-parser": "^3.0.3",
     "@types/lodash.capitalize": "^4.2.7",
     "@types/node": "^20.5.1",
-    "@types/sound-play": "^1.1.0",
     "concurrently": "^8.2.0",
     "nodemon": "^3.0.1",
     "ts-node": "^10.9.1",

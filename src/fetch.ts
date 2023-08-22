@@ -26,9 +26,14 @@ export async function getNewCommits(): Promise<Commit[]> {
     // @ts-ignore
     .map((p) => p.value);
 
-  const flattenedCommits = commits.reduce((acc, val) => acc.concat(val), []);
+  const flattenedCommits: SentryCommit[] = commits.reduce(
+    (acc, val) => acc.concat(val),
+    []
+  );
 
-  return flattenedCommits.map(transformCommit);
+  const uniqueCommits = new Map(flattenedCommits.map((c) => [c.id, c]));
+
+  return [...uniqueCommits.values()].map(transformCommit);
 }
 
 async function getNewReleases(): Promise<Release[]> {
@@ -68,7 +73,9 @@ async function getNewReleases(): Promise<Release[]> {
 async function getCommitsForRelease(release: Release): Promise<SentryCommit[]> {
   try {
     const res = await get(
-      `${BASE_URL}/projects/sentry/sentry/releases/${release.version}/commits/`
+      `${BASE_URL}/projects/sentry/${getProjectSlug(release)}/releases/${
+        release.version
+      }/commits/`
     );
 
     return res.data;
@@ -126,4 +133,8 @@ function transformCommit(commit: SentryCommit): Commit {
     dateCreated: commit.dateCreated,
     author: commit.author,
   };
+}
+
+function getProjectSlug(release: Release): string {
+  return release?.projects?.[0].slug ?? "sentry";
 }

@@ -1,4 +1,5 @@
 import fs from "fs";
+import { sleep } from "../utils";
 
 const API_URL = "https://tiktok-tts.weilnet.workers.dev/api/generation";
 
@@ -18,55 +19,16 @@ const AVAILABLE_VOICES = [
   "en_au_001", // Female
   "en_au_002", // Male
 
-  // French
-  "fr_001", // Male 1
-  "fr_002", // Male 2
-
-  // German
-  "de_001", // Female
-  "de_002", // Male
-
-  // Spanish
-  "es_002", // Male
-
-  // Spanish MX
-  "es_mx_002", // Male
-
-  // Portuguese BR
-  "br_003", // Female 2
-  "br_004", // Female 3
-  "br_005", // Male
-
-  // Indonesian
-  "id_001", // Female
-
-  // Japanese
-  "jp_001", // Female 1
-  "jp_003", // Female 2
-  "jp_005", // Female 3
-  "jp_006", // Male
-
-  // Korean
-  "kr_002", // Male 1
-  "kr_002", // Male 2
-  "kr_002", // Female
-
   // Singing
   "en_female_ht_f08_wonderful_world",
   "en_female_ht_f08_glorious",
   "en_male_m03_lobby",
 
   // Characters
-  "en_us_rocket"
+  "en_us_rocket",
 ];
 
-/**
- * Call the API and returns the mp3 data as string
- * @param {string} text text to be read
- * @param {string} voice voice to be used
- * @returns mp3 data as string
- */
-async function callAPI(text, voice) {
+async function callAPI(text: string, voice: string) {
   const body = JSON.stringify({
     text,
     voice,
@@ -94,13 +56,12 @@ async function callAPI(text, voice) {
   return mp3;
 }
 
-/**
- * @param {string} dirPath directory path
- * @param {string} fileName file name
- * @param {string} data data
- * @param {string} encoding encoding
- */
-function writeFile(dirPath, fileName, data, encoding = "utf8") {
+function writeFile(
+  dirPath: string,
+  fileName: string,
+  data: string,
+  encoding = "utf8"
+) {
   if (!fs.existsSync(dirPath)) {
     fs.mkdirSync(dirPath);
   }
@@ -109,39 +70,20 @@ function writeFile(dirPath, fileName, data, encoding = "utf8") {
   });
 }
 
-/**
- *
- * @param {string} mp3 mp3 data
- * @param {number} index path to file
- * @param {string} dirPath dirPath
- */
-function writeMP3File(mp3, index, dirPath) {
-  writeFile(dirPath, `audio-${index}.mp3`, mp3, "base64")
+function writeMP3File(mp3: string, index: number, dirPath: string) {
+  writeFile(dirPath, `audio-${index}.mp3`, mp3, "base64");
 }
 
-/**
- *
- * @param {string} text text
- * @param {number} index path to file
- * @param {string} dirPath dirPath
- */
-function writeTextFile(text, index, dirPath) {
-  writeFile(dirPath, `text-${index}.txt`, text)
+function writeTextFile(text: string, index: number, dirPath: string) {
+  writeFile(dirPath, `text-${index}.txt`, text);
 }
 
-function sleep(ms) {
-  return new Promise((resolve) => {
-    setTimeout(resolve, ms);
-  });
-}
-
-/**
- * @param {string} voice voice
- * @param {string} text text
- * @param {string} textDirPath dirPath
- * @param {string} audioDirPath audioDirPath
- */
-export async function textToSpeechIt(voice, text, textDirPath, audioDirPath) {
+export async function textToSpeechIt(
+  voice: string,
+  text: string,
+  textDirPath: string,
+  audioDirPath: string
+) {
   if (!voice || !AVAILABLE_VOICES.includes(voice))
     throw "A valid voice must be passed. Look at AVAILABLE_VOICES to set the desired voice.";
 
@@ -149,7 +91,7 @@ export async function textToSpeechIt(voice, text, textDirPath, audioDirPath) {
 
   const textAsArr = text.split(" ");
 
-  const texts = [];
+  const texts: string[] = [];
   let j = 0;
   let currentSentence = "";
   for (let index = 0; index < textAsArr.length; index++) {
@@ -174,7 +116,7 @@ export async function textToSpeechIt(voice, text, textDirPath, audioDirPath) {
 
     writeMP3File(mp3, index, audioDirPath);
 
-    writeTextFile(text, index, textDirPath)
+    writeTextFile(text, index, textDirPath);
   }
 }
 

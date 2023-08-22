@@ -2,24 +2,8 @@ import conventionalCommitsParser from "conventional-commits-parser";
 import { Commit } from "./types";
 import capitalize from "lodash.capitalize";
 
-// Authors not in this map will be ignored
-const AUTHOR_MAP: Record<string, {nickname: string}> = {
-    'matej.minar@sentry.io': {
-        nickname: 'Ma-tay',
-    },
-    'ognjen.bostjancic@sentry.io': {
-        nickname: 'Ogi',
-    },
-    'megan@sentry.io': {
-        nickname: 'Megan',
-    }
-}
-
-export function getAnnounceMessage(commit: Commit) {
+export function getAnnounceMessage(commit: Commit, nickname: string) {
   // Ignore unknown authors
-  if (!Object.keys(AUTHOR_MAP).includes(commit.author.email)) {
-    return;
-  }
 
   let announceMessage = "";
   const { type, scope, subject } = conventionalCommitsParser.sync(
@@ -32,7 +16,7 @@ export function getAnnounceMessage(commit: Commit) {
   }
 
   // Start the message with author's name
-  announceMessage += AUTHOR_MAP[commit.author.email].nickname;
+  announceMessage += nickname;
 
   // Include the what and where
   switch (type) {
