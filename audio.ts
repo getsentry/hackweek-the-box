@@ -1,4 +1,7 @@
-import sound from "sound-play";
+// import player from 'play-sound';
+// import sound from "sound-play";
+import { NodeSound } from 'node-sound';
+const player = NodeSound.getDefaultPlayer();
 import { join } from "path";
 import { sleep } from "./utils";
 import {textToSpeechIt} from './tiktok';
@@ -12,20 +15,24 @@ export type SoundFile = keyof typeof SoundFileMap;
 export async function play(soundFile: SoundFile, message: string) {
   const voiceFile = await generateMp3(message);
   await playSound(soundFile);
-  await sleep(1);
+  // await sleep(1);
   await playVoice(voiceFile);
 }
 
 async function playSound(soundFile: SoundFile) {
   const fullPath = join(__dirname, "assets", SoundFileMap[soundFile]);
 
-  sound.play(fullPath);
+  // sound.play(fullPath);
+  // player().play(fullPath);
+  return player.play(fullPath);
 }
 
 async function playVoice(voiceFile: string) {
   const fullPath = join(__dirname, "assets", voiceFile);
 
-  sound.play(fullPath);
+  // sound.play(fullPath);
+  // player().play(fullPath);
+  return player.play(fullPath);
 }
 
 async function generateMp3(soundString: string) {
