@@ -17,7 +17,7 @@ const main = async () => {
 };
 
 export async function checkForNewCommits() {
-  console.log("Checking for new commits");
+  console.log(`Checking for new commits (${new Date().toISOString()})`);
   const commits = await getNewCommits();
   const rules = await state.rules.getAll();
   console.log("Found", commits.length, "new commits");
