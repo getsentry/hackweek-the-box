@@ -1,7 +1,12 @@
 import conventionalCommitsParser from "conventional-commits-parser";
 import { Commit, PlayConfig, Rule } from "./types";
-import { Voice, randomSound, randomVoice } from "./audio";
+import { randomSound, randomVoice } from "./audio";
 
+/*
+ * This function takes a commit and a list of rules and returns a PlayConfig
+ * It checks which rules commit matches and applies them in the order they are defined
+ * If no rules match, it returns undefined, and the commit is ignored
+ */
 export function getPlayConfig(
   commit: Commit,
   rules: Rule[]
