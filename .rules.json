@@ -1,0 +1,51 @@
+[
+  {
+    "match": {
+      "author": "matej.minar@sentry.io"
+    },
+    "play": {
+      "nickname": "Ma-tay"
+    }
+  },
+  {
+    "match": {
+      "author": "ognjen.bostjancic@sentry.io"
+    },
+    "play": {
+      "nickname": "O-ghee"
+    }
+  },
+  {
+    "match": {
+      "author": "radu.woinarowski@sentry.io"
+    },
+    "play": {
+      "nickname": "Rah-doo",
+      "sound": "WOOF"
+    }
+  },
+  {
+    "match": {
+      "author": "riccardo.busseti@sentry.io"
+    },
+    "play": {
+      "voice": "it_001"
+    }
+  },
+  {
+    "match": {
+      "author": "megan@sentry.io"
+    },
+    "play": {
+      "nickname": "Megan"
+    }
+  },
+  {
+    "match": {
+      "scope": "heroku"
+    },
+    "play": {
+      "voice": "en_uk_001"
+    }
+  }
+]
