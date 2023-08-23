@@ -7,6 +7,7 @@ import { play } from "./audio";
 import { Commit, Rule } from "./types";
 import { runEvery, sleep } from "./utils";
 import { getPlayConfig } from "./config";
+import { lightOff, lightOn } from "./light";
 
 dotenv.config();
 
@@ -44,7 +45,10 @@ async function checkCommit(commit: Commit, rules: Rule[]) {
 
   console.log("Playing message", message);
 
+  await lightOn();
   await play(message, config);
+  await lightOff();
+
   await sleep(2000);
 }
 

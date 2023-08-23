@@ -32,12 +32,14 @@
     "typescript": "^5.1.6"
   },
   "dependencies": {
+    "@types/rpi-gpio": "^2.1.1",
     "axios": "^1.4.0",
     "conventional-commits-parser": "^4.0.0",
     "cross-fetch": "^4.0.0",
     "dotenv": "^16.3.1",
     "lodash.capitalize": "^4.2.1",
     "node-fetch": "^3.3.2",
-    "node-sound": "^0.0.8"
+    "node-sound": "^0.0.8",
+    "rpi-gpio": "^2.1.7"
   }
 }
