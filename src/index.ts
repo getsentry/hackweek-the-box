@@ -7,11 +7,12 @@ import { play } from "./audio";
 import { Commit, Rule } from "./types";
 import { runEvery, sleep } from "./utils";
 import { getPlayConfig } from "./config";
-import { lightOff, lightOn } from "./light";
+import { initLight, lightOff, lightOn } from "./light";
 
 dotenv.config();
 
 const main = async () => {
+  initLight();
   await init();
 
   runEvery(60, checkForNewCommits);
