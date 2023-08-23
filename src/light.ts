@@ -1,10 +1,11 @@
-import { promise as gpio } from "rpi-gpio";
+import shell from 'shelljs';
 
 const LIGHT_PIN = 20;
 
 export async function initLight() {
   try {
-    await gpio.setup(LIGHT_PIN, gpio.DIR_OUT);
+    shell.exec(`/home/ubuntu/raspi-gpio/raspi-gpio set ${LIGHT_PIN} op`);
+    shell.exec(`/home/ubuntu/raspi-gpio/raspi-gpio set ${LIGHT_PIN} dh`);
     console.log("init light");
   } catch (e) {
     console.error(e);
@@ -14,7 +15,7 @@ export async function initLight() {
 
 export async function lightOn() {
   try {
-    await gpio.write(LIGHT_PIN, true);
+    shell.exec(`/home/ubuntu/raspi-gpio/raspi-gpio set ${LIGHT_PIN} dl`);
     console.log("turn on");
   } catch (e) {
     console.error(e);
@@ -24,7 +25,7 @@ export async function lightOn() {
 
 export async function lightOff() {
   try {
-    await gpio.write(LIGHT_PIN, false);
+    shell.exec(`/home/ubuntu/raspi-gpio/raspi-gpio set ${LIGHT_PIN} dh`);
     console.log("turn off");
   } catch (e) {
     console.error(e);

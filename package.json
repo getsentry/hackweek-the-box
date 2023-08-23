@@ -25,6 +25,7 @@
     "@types/conventional-commits-parser": "^3.0.3",
     "@types/lodash.capitalize": "^4.2.7",
     "@types/node": "^20.5.1",
+    "@types/shelljs": "^0.8.12",
     "concurrently": "^8.2.0",
     "nodemon": "^3.0.1",
     "ts-node": "^10.9.1",
@@ -39,6 +40,7 @@
     "lodash.capitalize": "^4.2.1",
     "node-fetch": "^3.3.2",
     "node-sound": "^0.0.8",
-    "rpi-gpio": "^2.1.7"
+    "rpi-gpio": "^2.1.7",
+    "shelljs": "^0.8.5"
   }
 }
