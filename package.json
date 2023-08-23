@@ -22,7 +22,6 @@
   },
   "homepage": "https://github.com/getsentry/the-box#readme",
   "devDependencies": {
-    "@types/axios": "^0.14.0",
     "@types/conventional-commits-parser": "^3.0.3",
     "@types/lodash.capitalize": "^4.2.7",
     "@types/node": "^20.5.1",
