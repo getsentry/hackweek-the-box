@@ -2,9 +2,9 @@
 import { NodeSound } from "node-sound";
 import { getAssetPath, getTempPath } from "./file";
 import { textToSpeechIt } from "./lib/tiktok";
-import { sleep } from "./utils";
 import { join } from "node:path";
 import { PlayConfig, SoundFile } from "./types";
+import shell from "shelljs";
 
 const player = NodeSound.getDefaultPlayer();
 
@@ -53,7 +53,13 @@ async function playSound(soundFile: SoundFile) {
 }
 
 async function playFile(file: string) {
-  return player.play(file);
+  const system = process.platform;
+
+  if (system === "darwin") {
+    shell.exec(`afplay ${file}`);
+  } else if (system === "linux") {
+    shell.exec(`DISPLAY=:0 mpg123 ${file}`);
+  }
 }
 
 async function generateMp3(soundString: string, config: PlayConfig) {

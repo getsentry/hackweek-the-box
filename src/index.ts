@@ -32,7 +32,7 @@ export async function checkForNewCommits() {
 }
 
 async function checkCommit(commit: Commit, rules: Rule[]) {
-  // commit = makeTestCommit(commit);
+  commit = makeTestCommit(commit);
   const config = await getPlayConfig(commit, rules);
 
   if (!config) {
