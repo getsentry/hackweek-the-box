@@ -15,7 +15,7 @@ const main = async () => {
   initLight();
   await init();
 
-  runEvery(20, checkForNewCommits);
+  runEvery(600, checkForNewCommits);
 };
 
 export async function checkForNewCommits() {
