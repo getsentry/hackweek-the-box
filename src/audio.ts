@@ -63,6 +63,8 @@ async function playFile(file: string) {
     shell.exec(`afplay ${file}`);
   } else if (system === "linux") {
     shell.exec(`DISPLAY=:0 mpg123 ${file}`);
+  } else {
+    throw new Error(`Unsupported platform: ${system}`);
   }
 }
 
