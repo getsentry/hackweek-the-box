@@ -1,12 +1,8 @@
-// @ts-expect-error no types
-import { NodeSound } from "node-sound";
 import { getAssetPath, getTempPath } from "./file";
 import { textToSpeechIt } from "./lib/tiktok";
 import { join } from "node:path";
 import { PlayConfig, SoundFile } from "./types";
 import shell from "shelljs";
-
-const player = NodeSound.getDefaultPlayer();
 
 export const SoundFileMap = {
   WOOF: "woof.mp3",
@@ -14,6 +10,7 @@ export const SoundFileMap = {
   SHIP: "ship-horn.mp3",
   SIGH: "sigh-of-relief.mp3",
   NOICE: "noice.mp3",
+  TESTING: "testing.mp3",
 };
 
 export enum Voice {
@@ -48,6 +45,13 @@ export async function play(message: string, config: PlayConfig) {
   return playFile(voiceFile);
 }
 
+async function generateMp3(soundString: string, config: PlayConfig) {
+  const dir = getTempPath();
+  await textToSpeechIt(`${config.voice}`, soundString, dir, dir);
+
+  return join(dir, `audio-0.mp3`);
+}
+
 async function playSound(soundFile: SoundFile) {
   return playFile(getAssetPath(SoundFileMap[soundFile]));
 }
@@ -62,13 +66,6 @@ async function playFile(file: string) {
   }
 }
 
-async function generateMp3(soundString: string, config: PlayConfig) {
-  const dir = getTempPath();
-  await textToSpeechIt(`${config.voice}`, soundString, dir, dir);
-
-  return join(dir, `audio-0.mp3`);
-}
-
 export function randomVoice(): Voice {
   const voices = Object.values(Voice).filter((v) => typeof v === "string");
   const index = Math.floor(Math.random() * voices.length);
@@ -81,6 +78,7 @@ export function getCommitSound(commitType: string = "") {
     fix: "SIGH",
     chore: "VACUUM",
     ref: "NOICE",
+    test: "TESTING",
   };
 
   return map[commitType] || "WOOF";

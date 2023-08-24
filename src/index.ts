@@ -32,7 +32,8 @@ export async function checkForNewCommits() {
 }
 
 async function checkCommit(commit: Commit, rules: Rule[]) {
-  if (process.env.NODE_ENV === "debug") {
+  // plays every commit in dev mode
+  if (process.env.NODE_ENV === "dev") {
     commit = makeTestCommit(commit);
   }
 
