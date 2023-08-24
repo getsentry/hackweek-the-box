@@ -11,6 +11,7 @@ export const SoundFileMap = {
   SIGH: "sigh-of-relief.mp3",
   NOICE: "noice.mp3",
   TESTING: "testing.mp3",
+  REWIND: "rewind.mp3",
 };
 
 export enum Voice {

@@ -9,10 +9,13 @@ export function getAnnounceMessage(commit: Commit, nickname: string) {
   const { type, scope, subject } = conventionalCommitsParser.sync(
     commit.message
   );
-
-  // Ignore if we can't build a reasonable message
   if (!subject) {
-    return;
+    if (commit.message.startsWith("Revert")) {
+      return `Umm, I think we have to go back`;
+    } else {
+      // Ignore if we can't build a reasonable message
+      return;
+    }
   }
 
   // Start the message with author's name
