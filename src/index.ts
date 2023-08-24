@@ -31,7 +31,7 @@ export async function checkForNewCommits() {
 
 async function checkCommit(commit: Commit, rules: Rule[]) {
   console.log("Checking commit", commit.message);
-  commit = makeTestCommit(commit);
+
   const config = await getPlayConfig(commit, rules);
 
   if (!config) {
@@ -54,16 +54,16 @@ async function checkCommit(commit: Commit, rules: Rule[]) {
   await sleep(2000);
 }
 
-function makeTestCommit(commit: Commit): Commit {
-  commit.message = "feat(dynamic-sampling): Add hackweek bias";
-  commit.author = {
-    id: "1",
-    name: "Matej Minar",
-    username: "matej.minar",
-    email: "matej.minar@sentry.io",
-  };
+// function makeTestCommit(commit: Commit): Commit {
+//   commit.message = "feat(dynamic-sampling): Add hackweek bias";
+//   commit.author = {
+//     id: "1",
+//     name: "Matej Minar",
+//     username: "matej.minar",
+//     email: "ognjen.bostjancic@sentry.io",
+//   };
 
-  return commit;
-}
+//   return commit;
+// }
 
 main();

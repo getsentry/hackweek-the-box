@@ -23,29 +23,5 @@
       "nickname": "Rah-doo",
       "sound": "WOOF"
     }
-  },
-  {
-    "match": {
-      "author": "riccardo.busseti@sentry.io"
-    },
-    "play": {
-      "voice": "it_001"
-    }
-  },
-  {
-    "match": {
-      "author": "megan@sentry.io"
-    },
-    "play": {
-      "nickname": "Megan"
-    }
-  },
-  {
-    "match": {
-      "scope": "dynamic-sampling"
-    },
-    "play": {
-      "voice": "en_us_001"
-    }
   }
 ]

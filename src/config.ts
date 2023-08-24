@@ -1,6 +1,6 @@
 import conventionalCommitsParser from "conventional-commits-parser";
 import { Commit, PlayConfig, Rule } from "./types";
-import { getCommitSound, randomVoice } from "./audio";
+import { Voice, getCommitSound, randomVoice } from "./audio";
 
 /*
  * This function takes a commit and a list of rules and returns a PlayConfig
@@ -40,6 +40,6 @@ function getDefaultConfig({ author, message }: Commit): PlayConfig {
   return {
     nickname: author.name,
     sound: getCommitSound(type as string),
-    voice: randomVoice(),
+    voice: Voice.en_us_001,
   };
 }
