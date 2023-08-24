@@ -42,7 +42,7 @@
   },
   {
     "match": {
-      "scope": "heroku"
+      "scope": "dynamic-sampling"
     },
     "play": {
       "voice": "en_us_001"

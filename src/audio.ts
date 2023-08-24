@@ -44,7 +44,6 @@ export enum Voice {
 export async function play(message: string, config: PlayConfig) {
   const voiceFile = await generateMp3(message, config);
   await playSound(config.sound);
-  await sleep(250);
 
   return playFile(voiceFile);
 }
