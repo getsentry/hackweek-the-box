@@ -22,7 +22,7 @@ export function getAnnounceMessage(commit: Commit, nickname: string) {
   switch (type) {
     case "feat":
       announceMessage += ` just shipped a new feature`;
-      announceMessage += scope ? ` to the ${scope.toLowerCase()}` : "";
+      announceMessage += scope ? ` to  ${scope.toLowerCase()}` : "";
       announceMessage += subject ? `. ${capitalize(subject)}!` : "!";
       break;
     case "fix":
