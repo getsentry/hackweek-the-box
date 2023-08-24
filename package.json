@@ -41,7 +41,6 @@
     "lodash.capitalize": "^4.2.1",
     "node-fetch": "^3.3.2",
     "node-sound": "^0.0.8",
-    "rpi-gpio": "^2.1.7",
     "shelljs": "^0.8.5"
   }
 }
