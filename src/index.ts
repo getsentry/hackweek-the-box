@@ -1,21 +1,22 @@
 import dotenv from "dotenv";
-import "cross-fetch/polyfill";
 import { getNewCommits } from "./fetch";
 import { getAnnounceMessage } from "./message";
-import { init, state } from "./state";
+import { state, initState } from "./state";
 import { play } from "./audio";
 import { Commit, Rule } from "./types";
 import { runEvery, sleep } from "./utils";
 import { getPlayConfig } from "./config";
 import { initLight, lightOff, lightOn } from "./light";
+import { initSentry } from "./sentry";
 
 dotenv.config();
 
 const main = async () => {
+  initSentry();
   initLight();
-  await init();
+  await initState();
 
-  runEvery(600, checkForNewCommits);
+  runEvery(60, checkForNewCommits);
 };
 
 export async function checkForNewCommits() {
@@ -27,15 +28,15 @@ export async function checkForNewCommits() {
   for (const commit of commits) {
     await checkCommit(commit, rules);
   }
+  console.log(`Finished check (${new Date().toISOString()})`);
 }
 
 async function checkCommit(commit: Commit, rules: Rule[]) {
-  console.log("Checking commit", commit.message);
-
   // commit = makeTestCommit(commit);
   const config = await getPlayConfig(commit, rules);
 
   if (!config) {
+    console.log("Ignoring commit", commit.message);
     return;
   }
 
@@ -43,6 +44,7 @@ async function checkCommit(commit: Commit, rules: Rule[]) {
   const message = getAnnounceMessage(commit, config.nickname);
 
   if (!message) {
+    console.error("Could not generate a message");
     return;
   }
 

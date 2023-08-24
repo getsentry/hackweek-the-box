@@ -4,7 +4,7 @@ import { Release, Rule } from "./types";
 const DB_FILENAME = "../.db";
 const RULES_FILENAME = "../.rules.json";
 
-export async function init(): Promise<void> {
+export async function initState(): Promise<void> {
   try {
     await readFile(DB_FILENAME);
     if (process.env.NODE_ENV === "dev") {
