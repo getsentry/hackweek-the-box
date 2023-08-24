@@ -32,7 +32,10 @@ export async function checkForNewCommits() {
 }
 
 async function checkCommit(commit: Commit, rules: Rule[]) {
-  commit = makeTestCommit(commit);
+  if (process.env.NODE_ENV === "debug") {
+    commit = makeTestCommit(commit);
+  }
+
   const config = await getPlayConfig(commit, rules);
 
   if (!config) {
@@ -61,8 +64,8 @@ function makeTestCommit(commit: Commit): Commit {
   commit.message = "feat(dynamic-sampling): Add hackweek bias";
   commit.author = {
     id: "1",
-    name: "Matej Minar",
-    username: "matej.minar",
+    name: "Ognjen",
+    username: "ognjen.bostjancic",
     email: "ognjen.bostjancic@sentry.io",
   };
 
