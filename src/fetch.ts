@@ -42,7 +42,7 @@ async function getNewReleases(): Promise<Release[]> {
       `${BASE_URL}/organizations/sentry/releases/`,
       {
         params: {
-          per_page: 30,
+          per_page: 20,
           sort: "date",
           status: "open",
           project: PROJECT_IDS,

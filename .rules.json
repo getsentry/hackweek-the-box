@@ -45,7 +45,7 @@
       "scope": "heroku"
     },
     "play": {
-      "voice": "en_uk_001"
+      "voice": "en_us_001"
     }
   }
 ]
