@@ -101,7 +101,7 @@ function get(url: string, config?: AxiosRequestConfig) {
 
 function isRelevantRelease(release: Release): boolean {
   return (
-    // isRecentlyCreated(release) &&
+    isRecentlyCreated(release) &&
     release.commitCount > 0 &&
     release.authors.length > 0 &&
     release.deployCount > 0 &&

@@ -35,7 +35,7 @@ function authorRule(author: string, config: Partial<PlayConfig> = {}): Rule {
 }
 
 describe("getPlayConfig", () => {
-  const commitMsg = "fix(dynamic-sampling) adjust sampling rate";
+  const commitMsg = "fix(dynamic-sampling): adjust sampling rate";
 
   it("should return play config (simple)", () => {
     const email = "matej.minar@sentry.io";
@@ -59,6 +59,24 @@ describe("getPlayConfig", () => {
 
     assert.equal(config?.nickname, "Nickname");
     assert.equal(config?.voice, Voice.en_au_001);
+  });
+
+  it("should return play config (sanitized scope match)", () => {
+    const email = "matej.minar@sentry.io";
+    const commit = mockCommit(email, commitMsg);
+    const rules = [
+      {
+        match: { scope: "dynamic-sampling" },
+        play: {
+          nickname: "Nickname",
+          voice: Voice.en_us_001,
+        },
+      },
+    ];
+    console.log(commit, rules);
+    const config = getPlayConfig(commit, rules);
+
+    assert.equal(typeof config, "object");
   });
 
   it("should return nothing", () => {

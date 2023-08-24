@@ -1,6 +1,6 @@
 import conventionalCommitsParser from "conventional-commits-parser";
 import { Commit, PlayConfig, Rule } from "./types";
-import { Voice, getCommitSound, randomVoice } from "./audio";
+import { Voice, getCommitSound } from "./audio";
 
 /*
  * This function takes a commit and a list of rules and returns a PlayConfig
@@ -29,7 +29,9 @@ function matches({ author, message }: Commit, { match }: Rule) {
 
   const matchAuthor = match.author ? match.author === author.email : true;
   const matchType = match.type ? match.type === type : true;
-  const matchScope = match.scope ? match.scope === scope : true;
+  const matchScope = match.scope
+    ? sanitizeScope(match.scope) === sanitizeScope(scope as string)
+    : true;
 
   return matchAuthor && matchType && matchScope;
 }
@@ -42,4 +44,12 @@ function getDefaultConfig({ author, message }: Commit): PlayConfig {
     sound: getCommitSound(type as string),
     voice: Voice.en_us_001,
   };
+}
+
+function sanitizeScope(scope?: string) {
+  if (!scope) {
+    return;
+  }
+
+  return scope.replace(/\W/g, "");
 }

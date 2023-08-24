@@ -7,8 +7,9 @@
     "build": "npx tsc",
     "start": "node dist/index.js",
     "test": "node --test --require ts-node/register ./src/*spec.ts",
-    "dev": "concurrently \"npx tsc --watch\" \"nodemon -q dist/index.js\"",
-    "dev:debug": "nodemon ./src/index.ts"
+    "dev": "npm run dev:debug",
+    "dev:debug": "nodemon ./src/index.ts",
+    "start:prod": "npm run build && node dist/index.js"
   },
   "repository": {
     "type": "git",
