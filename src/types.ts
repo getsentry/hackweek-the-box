@@ -19,10 +19,7 @@ export interface Release {
   id: number;
   version: string;
   status: string;
-  shortVersion: string;
   versionInfo: VersionInfo;
-  ref: null;
-  url: null;
   dateReleased: null;
   dateCreated: string;
   commitCount: number;
@@ -33,21 +30,13 @@ export interface Release {
 }
 
 export interface LastDeploy {
-  id: string;
   environment: string;
-  dateFinished: string;
-  name: string;
 }
 
 export interface VersionInfo {
   package: string;
-  version: Version;
-  description: string;
-  buildHash: string;
-}
 
-export interface Version {
-  raw: string;
+  buildHash: string;
 }
 
 export interface Project {
@@ -66,13 +55,6 @@ export interface Rule {
   play: Partial<RuleConfig>;
 }
 
-export interface RuleConfig {
-  nickname: string;
-  voice: Voice;
-  sound: Sound;
-  light: boolean;
-}
-
 export interface ParsedCommit {
   author: Author;
   type?: string;
@@ -80,9 +62,16 @@ export interface ParsedCommit {
   subject?: string;
 }
 
-export type AnnouncementConfig = {
-  message: string;
+interface BaseConfig {
   voice: Voice;
   sound?: Sound;
   light: boolean;
-};
+}
+
+export interface RuleConfig extends BaseConfig {
+  nickname: string;
+}
+
+export interface AnnouncementConfig extends BaseConfig {
+  message: string;
+}
