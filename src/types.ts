@@ -1,4 +1,4 @@
-import { SoundFileMap, Voice } from "./audio";
+import { Sound, Voice } from "./audio";
 export interface Commit {
   id: string;
   message: string;
@@ -61,16 +61,28 @@ export interface MatchConfig {
   scope: string;
 }
 
-export interface PlayConfig {
-  nickname: string;
-  sound: SoundFile;
-  voice: Voice;
-}
-
 export interface Rule {
   match: Partial<MatchConfig>;
-  play: Partial<PlayConfig>;
+  play: Partial<RuleConfig>;
 }
 
+export interface RuleConfig {
+  nickname: string;
+  voice: Voice;
+  sound: Sound;
+  light: boolean;
+}
 
-export type SoundFile = keyof typeof SoundFileMap;
+export interface ParsedCommit {
+  author: Author;
+  type?: string;
+  scope?: string;
+  subject?: string;
+}
+
+export type AnnouncementConfig = {
+  message: string;
+  voice: Voice;
+  sound?: Sound;
+  light: boolean;
+};

@@ -1,17 +1,14 @@
 import assert from "assert";
-import * as fetch from "../src/fetch";
-import { describe, it, mock } from "node:test";
-import { checkForNewCommits } from "../src/index";
-import { PlayConfig, Rule } from "../src/types";
-import { getPlayConfig } from "../src/config";
-import { partial } from "lodash";
+import { describe, it } from "node:test";
 import { Voice } from "../src/audio";
+import { getAnnouncementConfig } from "../src/config";
+import { ParsedCommit, Rule, RuleConfig } from "../src/types";
 
-function mockCommit(author: string, message: string) {
+function mockParsedCommit(author: string, message: string): ParsedCommit {
   return {
-    id: Date.now().toString(),
-    message,
-    dateCreated: new Date().toISOString(),
+    type: "feat",
+    scope: "dynamic-sampling",
+    subject: message,
     author: {
       id: Date.now().toString(),
       name: author,
@@ -21,7 +18,7 @@ function mockCommit(author: string, message: string) {
   };
 }
 
-function authorRule(author: string, config: Partial<PlayConfig> = {}): Rule {
+function authorRule(author: string, config: Partial<RuleConfig> = {}): Rule {
   return {
     match: {
       author,
@@ -34,36 +31,42 @@ function authorRule(author: string, config: Partial<PlayConfig> = {}): Rule {
   };
 }
 
-describe("getPlayConfig", () => {
-  const commitMsg = "fix(dynamic-sampling): adjust sampling rate";
+describe("getAnnouncementConfig", () => {
+  const commitMsg = "adjust sampling rate";
 
   it("should return play config (simple)", () => {
     const email = "matej.minar@sentry.io";
-    const commit = mockCommit(email, commitMsg);
+    const commit = mockParsedCommit(email, commitMsg);
     const rules = [authorRule(email)];
 
-    const config = getPlayConfig(commit, rules);
+    const config = getAnnouncementConfig(commit, rules);
 
-    assert.equal(config?.nickname, "Nickname");
+    assert.equal(
+      config?.message,
+      "Nickname just shipped a new feature to dynamic-sampling. Adjust sampling rate!"
+    );
   });
 
   it("should return play config (merged)", () => {
     const email = "matej.minar@sentry.io";
-    const commit = mockCommit(email, commitMsg);
+    const commit = mockParsedCommit(email, commitMsg);
     const rules = [
       authorRule(email),
       authorRule(email, { voice: Voice.en_au_001 }),
     ];
 
-    const config = getPlayConfig(commit, rules);
+    const config = getAnnouncementConfig(commit, rules);
 
-    assert.equal(config?.nickname, "Nickname");
+    assert.equal(
+      config?.message,
+      "Nickname just shipped a new feature to dynamic-sampling. Adjust sampling rate!"
+    );
     assert.equal(config?.voice, Voice.en_au_001);
   });
 
-  it("should return play config (sanitized scope match)", () => {
+  it("should return announcement config (sanitized scope match)", () => {
     const email = "matej.minar@sentry.io";
-    const commit = mockCommit(email, commitMsg);
+    const commit = mockParsedCommit(email, commitMsg);
     const rules = [
       {
         match: { scope: "dynamic-sampling" },
@@ -73,19 +76,18 @@ describe("getPlayConfig", () => {
         },
       },
     ];
-    console.log(commit, rules);
-    const config = getPlayConfig(commit, rules);
+
+    const config = getAnnouncementConfig(commit, rules);
 
     assert.equal(typeof config, "object");
   });
 
   it("should return nothing", () => {
     const email = "matej.minar@sentry.io";
-    const commit = mockCommit(email, commitMsg);
-
+    const commit = mockParsedCommit(email, commitMsg);
     const rules: Rule[] = [];
 
-    const config = getPlayConfig(commit, rules);
+    const config = getAnnouncementConfig(commit, rules);
 
     assert.equal(config, undefined);
   });

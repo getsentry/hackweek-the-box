@@ -1,10 +1,17 @@
-import { getAssetPath, getTempPath } from "./file";
-import { textToSpeechIt } from "./lib/tiktok";
-import { join } from "node:path";
-import { PlayConfig, SoundFile } from "./types";
 import shell from "shelljs";
+import { getAssetPath } from "./file";
 
-export const SoundFileMap = {
+export enum Sound {
+  WOOF = "WOOF",
+  VACUUM = "VACUUM",
+  SHIP = "SHIP",
+  SIGH = "SIGH",
+  NOICE = "NOICE",
+  TESTING = "TESTING",
+  REWIND = "REWIND",
+}
+
+export const SoundFileMap: Record<Sound, string> = {
   WOOF: "woof.mp3",
   VACUUM: "vacuum-cleaner.mp3",
   SHIP: "ship-horn.mp3",
@@ -39,25 +46,11 @@ export enum Voice {
   "en_us_rocket" = "en_us_rocket",
 }
 
-export async function play(message: string, config: PlayConfig) {
-  const voiceFile = await generateMp3(message, config);
-  await playSound(config.sound);
-
-  return playFile(voiceFile);
+export async function playSound(sound: Sound) {
+  return playFile(getAssetPath(SoundFileMap[sound]));
 }
 
-async function generateMp3(soundString: string, config: PlayConfig) {
-  const dir = getTempPath();
-  await textToSpeechIt(`${config.voice}`, soundString, dir, dir);
-
-  return join(dir, `audio-0.mp3`);
-}
-
-async function playSound(soundFile: SoundFile) {
-  return playFile(getAssetPath(SoundFileMap[soundFile]));
-}
-
-async function playFile(file: string) {
+export async function playFile(file: string) {
   const system = process.platform;
 
   if (system === "darwin") {
@@ -76,13 +69,13 @@ export function randomVoice(): Voice {
 }
 
 export function getCommitSound(commitType: string = "") {
-  const map: Record<string, SoundFile> = {
-    feat: "SHIP",
-    fix: "SIGH",
-    chore: "VACUUM",
-    ref: "NOICE",
-    test: "TESTING",
+  const map: Record<string, Sound> = {
+    feat: Sound.SHIP,
+    fix: Sound.SIGH,
+    chore: Sound.VACUUM,
+    ref: Sound.NOICE,
+    test: Sound.TESTING,
   };
 
-  return map[commitType] || "WOOF";
+  return map[commitType] || Sound.WOOF;
 }
