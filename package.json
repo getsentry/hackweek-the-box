@@ -11,6 +11,7 @@
     "dev:debug": "nodemon ./src/index.ts",
     "start:prod": "npm run build && node dist/index.js"
   },
+  "bin": "./dist/cli.js",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/getsentry/the-box.git"
@@ -35,6 +36,7 @@
     "@sentry/node": "^7.64.0",
     "@types/rpi-gpio": "^2.1.1",
     "axios": "^1.4.0",
+    "commander": "^11.0.0",
     "conventional-commits-parser": "^4.0.0",
     "cross-fetch": "^4.0.0",
     "dotenv": "^16.3.1",
