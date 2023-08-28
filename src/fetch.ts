@@ -18,6 +18,7 @@ interface SentryCommit extends Commit {
 
 export async function getNewCommits(): Promise<Commit[]> {
   const releases = await getNewReleases();
+  console.log("Found", releases.length, "new releases");
 
   await state.releases.save(releases);
 
@@ -30,8 +31,10 @@ export async function getNewCommits(): Promise<Commit[]> {
     (acc, val) => acc.concat(val),
     []
   );
+  console.log("Found total of", flattenedCommits.length, "commits");
 
   const uniqueCommits = new Map(flattenedCommits.map((c) => [c.id, c]));
+  console.log("Found", uniqueCommits.size, "unique commits");
 
   return [...uniqueCommits.values()].map(transformCommit);
 }
