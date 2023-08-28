@@ -3,7 +3,7 @@ import { state } from "./state";
 import axios, { AxiosRequestConfig } from "axios";
 
 const BASE_URL = "https://sentry.sentry.io/api/0";
-const RECENT_THRESHOLD = 1000 * 30; // 30 seconds
+const RECENT_THRESHOLD = 1000 * 60 * 5; // 5 minutes
 
 const PROJECT_IDS = [
   1, //sentry backend
@@ -105,7 +105,6 @@ function get(url: string, config?: AxiosRequestConfig) {
 
 function isRelevantRelease(release: Release): boolean {
   return (
-    isRecentlyCreated(release) &&
     release.commitCount > 0 &&
     release.authors.length > 0 &&
     release.deployCount > 0 &&
