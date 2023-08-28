@@ -52,12 +52,13 @@ async function getNewReleases(): Promise<Release[]> {
         },
       }
     );
-
+    console.log("Total new releases", releases.length);
     const relevantReleases = releases
       .filter(isRelevantRelease)
       .filter(isRecentlyCreated);
+    console.log("Relevant releases", relevantReleases.length);
     const previousReleases = await state.releases.getAll();
-
+    console.log("Previous releases", Object.keys(previousReleases).length);
     const newReleases = relevantReleases.filter(
       (r: Release) => previousReleases[r.id] === undefined
     );
