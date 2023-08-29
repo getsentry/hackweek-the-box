@@ -53,9 +53,9 @@ async function getNewReleases(): Promise<Release[]> {
       }
     );
     console.log("Total new releases", releases.length);
-    const relevantReleases = releases
-      .filter(isRelevantRelease)
-      .filter(isRecentlyCreated);
+    const recentReleases = releases.filter(isRecentlyCreated);
+    console.log("Recent releases", recentReleases.length);
+    const relevantReleases = recentReleases.filter(isRelevantRelease);
     console.log("Relevant releases", relevantReleases.length);
     const previousReleases = await state.releases.getAll();
     console.log("Previous releases", Object.keys(previousReleases).length);
@@ -113,20 +113,16 @@ function isRelevantRelease(release: Release): boolean {
   );
 }
 
-function isRecentlyCreated(
-  release: Release,
-  threshold = RECENT_THRESHOLD
-): boolean {
+function isRecentlyCreated(release: Release): boolean {
   if (process.env.NODE_ENV === "dev") {
     return true;
   }
-
   const created = new Date(release.dateCreated);
   const now = new Date();
 
   const diff = now.getTime() - created.getTime();
 
-  return diff < threshold;
+  return diff < RECENT_THRESHOLD;
 }
 
 function transformCommit(commit: SentryCommit): Commit {
