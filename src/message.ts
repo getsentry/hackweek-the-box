@@ -37,7 +37,12 @@ export function getAnnounceMessage(
       }`;
       announceMessage += subject ? `. ${capitalize(subject)}!` : "!";
       break;
-
+    case "revert":
+      announceMessage += ` just reverted the ${
+        scope ? scope.toLowerCase() : "code"
+      }`;
+      announceMessage += subject ? `. ${capitalize(subject)}!` : "!";
+      break;
     default:
       announceMessage += ` just deployed ${subject?.toLowerCase()}`;
       announceMessage += scope ? ` in ${scope.toLowerCase()}!` : "!";

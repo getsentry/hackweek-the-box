@@ -14,6 +14,17 @@ export const runEvery = (seconds: number, fn: () => void) => {
 };
 
 export const parseCommit = (commit: Commit): ParsedCommit => {
+  if (commit.message.startsWith("Revert")) {
+    const originalMessage = commit.message.match(/Revert "(.*)"/)?.[1];
+
+    const parsed = parseCommit({
+      ...commit,
+      message: originalMessage || "",
+    });
+
+    return { ...parsed, type: "revert" };
+  }
+
   const { type, scope, subject } = conventionalCommitsParser.sync(
     commit.message
   );
