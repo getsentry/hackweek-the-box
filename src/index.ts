@@ -54,9 +54,9 @@ function makeTestCommit(commit: Commit): Commit {
   commit.message = "feat(dynamic-sampling): Add hackweek bias";
   commit.author = {
     id: "1",
-    name: "Ognjen",
-    username: "ognjen.bostjancic",
-    email: "ognjen.bostjancic@sentry.io",
+    name: "Matej",
+    username: "matej.minar",
+    email: "matej.minar@sentry.io",
   };
 
   return commit;

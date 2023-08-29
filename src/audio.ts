@@ -75,6 +75,7 @@ export function getCommitSound(commitType: string = "") {
     chore: Sound.VACUUM,
     ref: Sound.NOICE,
     test: Sound.TESTING,
+    revert: Sound.REWIND,
   };
 
   return map[commitType] || Sound.WOOF;
