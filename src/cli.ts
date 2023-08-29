@@ -9,13 +9,13 @@ program
   .argument("<message>, message to play")
   .option("-v, --voice <voice>", "voice to use", Voice.en_us_001)
   .option("-s, --sound <sound>", "sound to play", undefined)
-  .option("-l, --light", "whether to turn on the light", true)
+  .option("-l, --light <light>", "whether to turn on the light", true)
   .action((message, opts) => {
     announce({
       message,
       voice: opts.voice,
       sound: opts.sound,
-      light: opts.light,
+      light: opts.light === true || opts.light === "true",
     });
   });
 
