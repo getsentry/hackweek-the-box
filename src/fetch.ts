@@ -60,7 +60,7 @@ async function getNewReleases(): Promise<Release[]> {
     const previousReleases = await state.releases.getAll();
     console.log("Previous releases", Object.keys(previousReleases).length);
     const newReleases = relevantReleases.filter(
-      (r: Release) => previousReleases[r.id] === undefined
+      (r: Release) => previousReleases[r.versionInfo.buildHash] === undefined
     );
 
     return newReleases;
