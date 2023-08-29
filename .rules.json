@@ -23,5 +23,21 @@
       "nickname": "Rah-doo",
       "sound": "WOOF"
     }
+  },
+  {
+    "match": {
+      "author": "riccardo.busetti@sentry.io"
+    },
+    "play": {
+      "nickname": "Riccardo"
+    }
+  },
+  {
+    "match": {
+      "author": "arthur.knaus@sentry.io"
+    },
+    "play": {
+      "nickname": "Arthur"
+    }
   }
 ]
