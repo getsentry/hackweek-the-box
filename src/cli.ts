@@ -15,15 +15,8 @@ program
       message,
       voice: opts.voice,
       sound: opts.sound,
-      light: true,
+      light: opts.light,
     });
-  });
-
-program
-  .command("sound")
-  .argument("<sound>, sound to play")
-  .action((sound) => {
-    console.log("sound command called", sound);
   });
 
 program.parse();
