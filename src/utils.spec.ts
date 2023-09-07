@@ -7,6 +7,8 @@ const commit: Commit = {
   id: "123",
   dateCreated: "2021-01-01T00:00:00.000Z",
   message: "feat: add new feature",
+  releases: [],
+  pr: "123",
   author: {
     id: "123",
     name: "Matej Minar",

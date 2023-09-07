@@ -4,6 +4,8 @@ export interface Commit {
   message: string;
   dateCreated: string;
   author: Author;
+  pr: string;
+  releases: string[];
 }
 
 export interface Author {

@@ -8,6 +8,7 @@ import { getAnnouncementConfig } from "./config";
 import { initLight } from "./light";
 import { initSentry } from "./sentry";
 import { announce } from "./announcement";
+import { getPRScopes } from "./github";
 
 dotenv.config();
 
@@ -41,7 +42,14 @@ async function checkCommit(commit: Commit, rules: Rule[]) {
   const config = await getAnnouncementConfig(parsedCommit, rules);
 
   if (!config) {
-    console.log("Ignoring commit", commit.message);
+    console.log("Ignoring commit - no config", commit.message);
+    return;
+  }
+
+  const hasMatchingScope = await checkReleaseScope(commit);
+  if (!hasMatchingScope) {
+    console.log("Ignoring commit - scope mismatch", commit.message);
+
     return;
   }
 
@@ -50,8 +58,16 @@ async function checkCommit(commit: Commit, rules: Rule[]) {
   await sleep(2000);
 }
 
+async function checkReleaseScope(commit: Commit) {
+  const scopes = await getPRScopes(commit.pr);
+  const releases = commit.releases;
+
+  const intersection = releases.filter((value) => scopes.includes(value));
+  return intersection.length > 0;
+}
+
 function makeTestCommit(commit: Commit): Commit {
-  commit.message = "feat(dynamic-sampling): Add hackweek bias";
+  // commit.message = "feat(dynamic-sampling): Add hackweek bias";
   commit.author = {
     id: "1",
     name: "Matej",

@@ -4,3 +4,4 @@ dist
 .env
 .db
 announcements
+.vscode/settings.json

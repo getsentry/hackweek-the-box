@@ -10,8 +10,13 @@ const PROJECT_IDS = [
   11276, // javascript frontend
 ];
 
-interface SentryCommit extends Commit {
+interface SentryCommit extends Omit<Commit, "releases"> {
+  releases: Release[];
+  repository: {
+    name: string;
+  };
   pullRequest: {
+    id: string;
     title: string;
   };
 }
@@ -34,9 +39,12 @@ export async function getNewCommits(): Promise<Commit[]> {
   console.log("Found total of", flattenedCommits.length, "commits");
 
   const uniqueCommits = new Map(flattenedCommits.map((c) => [c.id, c]));
+  const sentryRepoCommits = [...uniqueCommits.values()].filter(
+    (commit) => commit.repository.name === "getsentry/sentry"
+  );
   console.log("Found", uniqueCommits.size, "unique commits");
 
-  return [...uniqueCommits.values()].map(transformCommit);
+  return sentryRepoCommits.map(transformCommit);
 }
 
 async function getNewReleases(): Promise<Release[]> {
@@ -60,7 +68,7 @@ async function getNewReleases(): Promise<Release[]> {
     const previousReleases = await state.releases.getAll();
     console.log("Previous releases", Object.keys(previousReleases).length);
     const newReleases = relevantReleases.filter(
-      (r: Release) => previousReleases[r.versionInfo.buildHash] === undefined
+      (r: Release) => previousReleases[r.version] === undefined
     );
 
     return newReleases;
@@ -131,7 +139,13 @@ function transformCommit(commit: SentryCommit): Commit {
     message: commit.pullRequest?.title || commit.message,
     dateCreated: commit.dateCreated,
     author: commit.author,
+    pr: commit.pullRequest?.id,
+    releases: commit.releases.map(getReleaseScope),
   };
+}
+
+function getReleaseScope(release: Release): string {
+  return release?.version?.split("@")?.[0] ?? "unknown";
 }
 
 function getProjectSlug(release: Release): string {

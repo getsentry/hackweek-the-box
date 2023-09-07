@@ -16,23 +16,58 @@ export async function initState(): Promise<void> {
 }
 
 async function wipe(): Promise<void> {
-  await writeFile(DB_FILENAME, JSON.stringify({ releases: {} }));
+  await writeFile(DB_FILENAME, JSON.stringify({ releases: {}, prs: {} }));
 }
 
-async function getReleases(): Promise<Record<string, Release>> {
+async function getEntities(
+  key: "releases" | "prs"
+): Promise<Record<string, Release>> {
   const db = await readFile(DB_FILENAME);
-  return JSON.parse(db).releases;
+  return JSON.parse(db)[key];
 }
 
-async function saveReleases(releases: Release[]): Promise<void> {
+async function saveEntities(
+  key: "releases" | "prs",
+  entities: unknown
+): Promise<void> {
   const db = await readFile(DB_FILENAME);
   const dbJson = JSON.parse(db);
 
-  for (const release of releases) {
-    dbJson.releases[release.versionInfo.buildHash] = release;
-  }
+  dbJson[key] = entities;
 
   await writeFile(DB_FILENAME, JSON.stringify(dbJson));
+}
+
+async function getReleases(): Promise<Record<string, Release>> {
+  return getEntities("releases");
+}
+
+async function saveReleases(releases: Release[]): Promise<void> {
+  const dbReleases = await getReleases();
+
+  for (const release of releases) {
+    dbReleases[release.version] = release;
+  }
+
+  await saveEntities("releases", dbReleases);
+}
+
+async function getPRs(): Promise<Record<string, any>> {
+  return getEntities("prs");
+}
+
+async function getPR(number: string): Promise<Record<string, any>> {
+  return (await getPRs())[number];
+}
+
+async function savePRs(prs: any[]): Promise<void> {
+  const dbPrs = await getPRs();
+
+  for (const pr of prs) {
+    dbPrs[pr.number] = pr;
+  }
+
+  await saveEntities("prs", dbPrs);
 }
 
 async function getRules(): Promise<Rule[]> {
@@ -53,6 +88,11 @@ export const state = {
   releases: {
     getAll: getReleases,
     save: saveReleases,
+  },
+  PRs: {
+    get: getPR,
+    getAll: getPRs,
+    save: savePRs,
   },
   rules: {
     save: saveRule,
