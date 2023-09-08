@@ -13,7 +13,7 @@ export async function getPR(id: string) {
   // otherwise, fetch it from github
   try {
     const res = await axios.get(`${BASE_URL}/pulls/${id}`, {});
-    await state.PRs.save([res.data]);
+    await state.PRs.save(res.data);
     return res.data;
   } catch (error) {
     console.log(error);

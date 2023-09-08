@@ -25,7 +25,7 @@ export async function getNewCommits(): Promise<Commit[]> {
   const releases = await getNewReleases();
   console.log("Found", releases.length, "new releases");
 
-  await state.releases.save(releases);
+  await state.releases.saveAll(releases);
 
   const commits = (await Promise.allSettled(releases.map(getCommitsForRelease)))
     .filter((p) => p.status === "fulfilled")

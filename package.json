@@ -8,7 +8,7 @@
     "build": "npx tsc",
     "start": "node dist/index.js",
     "test": "node --loader ts-node/esm ./src/*spec.ts",
-    "dev:debug": "nodemon ./src/index.ts",
+    "dev:debug": "nodemon ./src/index.ts --trace-warnings",
     "start:prod": "npm run build && node dist/index.js"
   },
   "bin": "./dist/cli.js",
@@ -41,6 +41,7 @@
     "conventional-commits-parser": "^4.0.0",
     "dotenv": "^16.3.1",
     "lodash.capitalize": "^4.2.1",
+    "lowdb": "^6.0.1",
     "shelljs": "^0.8.5"
   }
 }

@@ -7,7 +7,7 @@ import { getAnnouncementConfig } from "./config.js";
 import { initLight } from "./light.js";
 import { initSentry } from "./sentry.js";
 import { announce } from "./announcement.js";
-import { getPRScopes } from "./github.js";
+import { getPRScopes } from "./pr.js";
 
 dotenv.config();
 
@@ -76,4 +76,8 @@ function makeTestCommit(commit: Commit): Commit {
   return commit;
 }
 
-main();
+try {
+  main();
+} catch (e) {
+  console.error(e);
+}

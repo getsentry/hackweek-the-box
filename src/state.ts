@@ -1,12 +1,11 @@
+import db from "./db.js";
 import { readFile, writeFile } from "./file.js";
 import { Release, Rule } from "./types.js";
 
-const DB_FILENAME = "../.db";
 const RULES_FILENAME = "../.rules.json";
 
 export async function initState(): Promise<void> {
   try {
-    await readFile(DB_FILENAME);
     if (process.env.NODE_ENV === "dev") {
       await wipe();
     }
@@ -16,58 +15,8 @@ export async function initState(): Promise<void> {
 }
 
 async function wipe(): Promise<void> {
-  await writeFile(DB_FILENAME, JSON.stringify({ releases: {}, prs: {} }));
-}
-
-async function getEntities(
-  key: "releases" | "prs"
-): Promise<Record<string, Release>> {
-  const db = await readFile(DB_FILENAME);
-  return JSON.parse(db)[key];
-}
-
-async function saveEntities(
-  key: "releases" | "prs",
-  entities: unknown
-): Promise<void> {
-  const db = await readFile(DB_FILENAME);
-  const dbJson = JSON.parse(db);
-
-  dbJson[key] = entities;
-
-  await writeFile(DB_FILENAME, JSON.stringify(dbJson));
-}
-
-async function getReleases(): Promise<Record<string, Release>> {
-  return getEntities("releases");
-}
-
-async function saveReleases(releases: Release[]): Promise<void> {
-  const dbReleases = await getReleases();
-
-  for (const release of releases) {
-    dbReleases[release.version] = release;
-  }
-
-  await saveEntities("releases", dbReleases);
-}
-
-async function getPRs(): Promise<Record<string, any>> {
-  return getEntities("prs");
-}
-
-async function getPR(number: string): Promise<Record<string, any>> {
-  return (await getPRs())[number];
-}
-
-async function savePRs(prs: any[]): Promise<void> {
-  const dbPrs = await getPRs();
-
-  for (const pr of prs) {
-    dbPrs[pr.number] = pr;
-  }
-
-  await saveEntities("prs", dbPrs);
+  await db.clear("prs");
+  await db.clear("releases");
 }
 
 async function getRules(): Promise<Rule[]> {
@@ -86,13 +35,15 @@ async function saveRule(rule: Rule): Promise<void> {
 
 export const state = {
   releases: {
-    getAll: getReleases,
-    save: saveReleases,
+    get: (id: string) => db.findOne("releases", id),
+    getAll: () => db.findAll("releases"),
+    save: (data: Release) => db.save("releases", data),
+    saveAll: (data: Release[]) => db.saveAll("releases", data),
   },
   PRs: {
-    get: getPR,
-    getAll: getPRs,
-    save: savePRs,
+    get: (id: string) => db.findOne("prs", id),
+    getAll: () => db.findAll("prs"),
+    save: (data: any) => db.save("prs", data),
   },
   rules: {
     save: saveRule,
