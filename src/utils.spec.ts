@@ -1,6 +1,6 @@
 import { describe, it } from "node:test";
-import { Commit } from "./types";
-import { parseCommit } from "./utils";
+import { Commit } from "./types.js";
+import { parseCommit } from "./utils.js";
 import assert from "node:assert";
 
 const commit: Commit = {

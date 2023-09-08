@@ -1,5 +1,5 @@
-import fs from "fs";
-import { sleep } from "../utils";
+import fs from "node:fs";
+import { sleep } from "../utils.js";
 
 const API_URL = "https://tiktok-tts.weilnet.workers.dev/api/generation";
 

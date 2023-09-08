@@ -1,5 +1,5 @@
-import { readFile, writeFile } from "./file";
-import { Release, Rule } from "./types";
+import { readFile, writeFile } from "./file.js";
+import { Release, Rule } from "./types.js";
 
 const DB_FILENAME = "../.db";
 const RULES_FILENAME = "../.rules.json";

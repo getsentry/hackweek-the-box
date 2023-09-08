@@ -1,4 +1,4 @@
-import { ParsedCommit } from "./types";
+import { ParsedCommit } from "./types.js";
 import capitalize from "lodash.capitalize";
 
 export function getAnnounceMessage(

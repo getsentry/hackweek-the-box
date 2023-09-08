@@ -1,4 +1,4 @@
-import { Sound, Voice } from "./audio";
+import { Sound, Voice } from "./audio.js";
 export interface Commit {
   id: string;
   message: string;

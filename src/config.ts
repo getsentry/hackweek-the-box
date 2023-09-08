@@ -1,6 +1,6 @@
-import { AnnouncementConfig, Rule, ParsedCommit, RuleConfig } from "./types";
-import { Voice, getCommitSound } from "./audio";
-import { getAnnounceMessage } from "./message";
+import { AnnouncementConfig, Rule, ParsedCommit, RuleConfig } from "./types.js";
+import { Voice, getCommitSound } from "./audio.js";
+import { getAnnounceMessage } from "./message.js";
 
 /*
  * This function takes a commit and a list of rules and returns a PlayConfig

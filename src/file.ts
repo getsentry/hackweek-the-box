@@ -1,6 +1,9 @@
-import { promises as fs } from "fs";
-import { join } from "node:path";
+import { promises as fs } from "node:fs";
+import { join, dirname } from "node:path";
 import { tmpdir } from "node:os";
+import { fileURLToPath } from "node:url";
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
 
 const ASSET_BASE_PATH = join(__dirname, "..", "assets");
 

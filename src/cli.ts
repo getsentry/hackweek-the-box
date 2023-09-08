@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 
 import { program } from "commander";
-import { announce } from "./announcement";
-import { Voice } from "./audio";
+import { announce } from "./announcement.js";
+import { Voice } from "./audio.js";
 
 program
   .command("play")

@@ -1,6 +1,6 @@
 import shell from "shelljs";
-import { getAssetPath } from "./file";
-import { CommitType } from "./types";
+import { getAssetPath } from "./file.js";
+import { CommitType } from "./types.js";
 
 export enum Sound {
   WOOF = "WOOF",

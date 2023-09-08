@@ -1,8 +1,8 @@
-import assert from "assert";
+import assert from "node:assert";
 import { describe, it } from "node:test";
-import { Voice } from "../src/audio";
-import { getAnnouncementConfig } from "../src/config";
-import { ParsedCommit, Rule, RuleConfig } from "../src/types";
+import { Voice } from "../src/audio.js";
+import { getAnnouncementConfig } from "../src/config.js";
+import { ParsedCommit, Rule, RuleConfig } from "../src/types.js";
 
 function mockParsedCommit(author: string, message: string): ParsedCommit {
   return {

@@ -1,5 +1,5 @@
 import conventionalCommitsParser from "conventional-commits-parser";
-import { Commit, CommitType, ParsedCommit } from "./types";
+import { Commit, CommitType, ParsedCommit } from "./types.js";
 
 export const sleep = (miliseconds: number) =>
   new Promise((resolve) => setTimeout(resolve, miliseconds));

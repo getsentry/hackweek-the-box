@@ -1,5 +1,5 @@
-import { Commit, Release } from "./types";
-import { state } from "./state";
+import { Commit, Release } from "./types.js";
+import { state } from "./state.js";
 import axios, { AxiosRequestConfig } from "axios";
 
 const BASE_URL = "https://sentry.sentry.io/api/0";

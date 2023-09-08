@@ -1,9 +1,9 @@
 import { join } from "node:path";
-import { playFile, playSound } from "./audio";
-import { getTempPath } from "./file";
-import { textToSpeechIt } from "./lib/tiktok";
-import { lightOff, lightOn } from "./light";
-import { AnnouncementConfig } from "./types";
+import { playFile, playSound } from "./audio.js";
+import { getTempPath } from "./file.js";
+import { textToSpeechIt } from "./lib/tiktok.js";
+import { lightOff, lightOn } from "./light.js";
+import { AnnouncementConfig } from "./types.js";
 
 export async function announce(config: AnnouncementConfig) {
   console.log("Announcing", config.message);

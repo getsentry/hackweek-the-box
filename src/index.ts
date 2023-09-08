@@ -1,14 +1,13 @@
 import dotenv from "dotenv";
-import { getNewCommits } from "./fetch";
-import { getAnnounceMessage } from "./message";
-import { state, initState } from "./state";
-import { Commit, Rule } from "./types";
-import { parseCommit, runEvery, sleep } from "./utils";
-import { getAnnouncementConfig } from "./config";
-import { initLight } from "./light";
-import { initSentry } from "./sentry";
-import { announce } from "./announcement";
-import { getPRScopes } from "./github";
+import { getNewCommits } from "./fetch.js";
+import { state, initState } from "./state.js";
+import { Commit, Rule } from "./types.js";
+import { parseCommit, runEvery, sleep } from "./utils.js";
+import { getAnnouncementConfig } from "./config.js";
+import { initLight } from "./light.js";
+import { initSentry } from "./sentry.js";
+import { announce } from "./announcement.js";
+import { getPRScopes } from "./github.js";
 
 dotenv.config();
 
@@ -49,7 +48,6 @@ async function checkCommit(commit: Commit, rules: Rule[]) {
   const hasMatchingScope = await checkReleaseScope(commit);
   if (!hasMatchingScope) {
     console.log("Ignoring commit - scope mismatch", commit.message);
-
     return;
   }
 

@@ -1,5 +1,5 @@
 import axios from "axios";
-import { state } from "./state";
+import { state } from "./state.js";
 
 const BASE_URL = "https://api.github.com/repos/getsentry/sentry";
 
