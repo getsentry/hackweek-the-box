@@ -59,10 +59,19 @@ export interface Rule {
 
 export interface ParsedCommit {
   author: Author;
-  type?: string;
+  type: CommitType;
   scope?: string;
   subject?: string;
 }
+
+export type CommitType =
+  | "feat"
+  | "fix"
+  | "ref"
+  | "chore"
+  | "test"
+  | "revert"
+  | "unknown";
 
 interface BaseConfig {
   voice: Voice;

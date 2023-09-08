@@ -53,4 +53,17 @@ describe("parseCommit", () => {
     assert.equal(parsedCommit.subject, "add new feature");
     assert.equal(parsedCommit.author.name, "Matej Minar");
   });
+
+  it("should parse a non conventional commit", () => {
+    const mockCommit = {
+      ...commit,
+      message: `I am not a conventional commit`,
+    };
+    const parsedCommit = parseCommit(mockCommit);
+
+    assert.equal(parsedCommit.type, "unknown");
+    assert.equal(parsedCommit.scope, undefined);
+    assert.equal(parsedCommit.subject, "I am not a conventional commit");
+    assert.equal(parsedCommit.author.name, "Matej Minar");
+  });
 });

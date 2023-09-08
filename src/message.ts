@@ -1,5 +1,4 @@
-import conventionalCommitsParser from "conventional-commits-parser";
-import { Commit, ParsedCommit } from "./types";
+import { ParsedCommit } from "./types";
 import capitalize from "lodash.capitalize";
 
 export function getAnnounceMessage(

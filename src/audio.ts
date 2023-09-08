@@ -1,5 +1,6 @@
 import shell from "shelljs";
 import { getAssetPath } from "./file";
+import { CommitType } from "./types";
 
 export enum Sound {
   WOOF = "WOOF",
@@ -9,7 +10,7 @@ export enum Sound {
   NOICE = "NOICE",
   TESTING = "TESTING",
   REWIND = "REWIND",
-  RICCARDO = "RICCARDO"
+  RICCARDO = "RICCARDO",
 }
 
 export const SoundFileMap: Record<Sound, string> = {
@@ -20,7 +21,7 @@ export const SoundFileMap: Record<Sound, string> = {
   NOICE: "noice.mp3",
   TESTING: "testing.mp3",
   REWIND: "rewind.mp3",
-  RICCARDO: "riccardo.mp3"
+  RICCARDO: "riccardo.mp3",
 };
 
 export enum Voice {
@@ -70,15 +71,16 @@ export function randomVoice(): Voice {
   return voices[index] as unknown as Voice;
 }
 
-export function getCommitSound(commitType: string = "") {
-  const map: Record<string, Sound> = {
+export function getCommitSound(commitType: CommitType) {
+  const map: Record<CommitType, Sound> = {
     feat: Sound.SHIP,
     fix: Sound.SIGH,
     chore: Sound.VACUUM,
     ref: Sound.NOICE,
     test: Sound.TESTING,
     revert: Sound.REWIND,
+    unknown: Sound.WOOF,
   };
 
-  return map[commitType] || Sound.WOOF;
+  return map[commitType];
 }

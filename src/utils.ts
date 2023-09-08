@@ -1,5 +1,5 @@
 import conventionalCommitsParser from "conventional-commits-parser";
-import { Commit, ParsedCommit } from "./types";
+import { Commit, CommitType, ParsedCommit } from "./types";
 
 export const sleep = (miliseconds: number) =>
   new Promise((resolve) => setTimeout(resolve, miliseconds));
@@ -29,10 +29,12 @@ export const parseCommit = (commit: Commit): ParsedCommit => {
     commit.message
   );
 
+  const parsedType = type ? type.trim() : "unknown";
+
   return {
-    type: type ? type.trim() : undefined,
+    type: parsedType as CommitType,
     scope: scope ? scope.trim() : undefined,
-    subject: subject ? subject.trim() : undefined,
+    subject: subject ? subject.trim() : commit.message,
     author: commit.author,
   };
 };

@@ -60,7 +60,7 @@ function getDefaultConfig({ author, type }: ParsedCommit): RuleConfig {
   return {
     light: true,
     nickname: author.name,
-    sound: getCommitSound(type as string),
+    sound: getCommitSound(type),
     voice: Voice.en_us_001,
   };
 }
