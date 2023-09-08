@@ -1,4 +1,4 @@
-import conventionalCommitsParser from "conventional-commits-parser";
+import parser from "conventional-commits-parser";
 import { Commit, CommitType, ParsedCommit } from "./types.js";
 
 export const sleep = (miliseconds: number) =>
@@ -25,9 +25,7 @@ export const parseCommit = (commit: Commit): ParsedCommit => {
     return { ...parsed, type: "revert" };
   }
 
-  const { type, scope, subject } = conventionalCommitsParser.sync(
-    commit.message
-  );
+  const { type, scope, subject } = parser.sync(commit.message);
 
   const parsedType = type ? type.trim() : "unknown";
 
