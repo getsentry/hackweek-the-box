@@ -50,3 +50,4 @@ export const state = {
     getAll: getRules,
   },
 };
+

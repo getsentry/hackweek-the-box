@@ -60,6 +60,14 @@ async function checkReleaseScope(commit: Commit) {
   const scopes = await getPRScopes(commit.pr);
   const releases = commit.releases;
 
+  console.log(
+    "Checking commit",
+    commit.message,
+    "for scopes",
+    scopes,
+    "in releases",
+    releases
+  );
   const intersection = releases.filter((value) => scopes.includes(value));
   return intersection.length > 0;
 }
