@@ -69,6 +69,7 @@ async function checkReleaseScope(commit: Commit) {
     releases
   );
   const intersection = releases.filter((value) => scopes.includes(value));
+  console.log("Found scopes", intersection);
   return intersection.length > 0;
 }
 
