@@ -23,7 +23,6 @@ export async function checkForNewCommits() {
   console.log(`Checking for new commits (${new Date().toISOString()})`);
   const commits = await getNewCommits();
   const rules = await state.rules.getAll();
-  console.log("Found", commits.length, "new commits");
 
   for (const commit of commits) {
     await checkCommit(commit, rules);
@@ -32,6 +31,7 @@ export async function checkForNewCommits() {
 }
 
 async function checkCommit(commit: Commit, rules: Rule[]) {
+  console.log("Checking commit", commit.message);
   // plays every commit in dev mode
   if (process.env.NODE_ENV === "dev") {
     commit = makeTestCommit(commit);
@@ -41,13 +41,13 @@ async function checkCommit(commit: Commit, rules: Rule[]) {
   const config = await getAnnouncementConfig(parsedCommit, rules);
 
   if (!config) {
-    console.log("Ignoring commit - no config", commit.message);
+    console.log("Ignoring - no config", commit.message);
     return;
   }
 
   const hasMatchingScope = await checkReleaseScope(commit);
   if (!hasMatchingScope) {
-    console.log("Ignoring commit - scope mismatch", commit.message);
+    console.log("Ignoring - scope mismatch", commit.message);
     return;
   }
 
@@ -60,16 +60,8 @@ async function checkReleaseScope(commit: Commit) {
   const scopes = await getPRScopes(commit.pr);
   const releases = commit.releases;
 
-  console.log(
-    "Checking commit",
-    commit.message,
-    "for scopes",
-    scopes,
-    "in releases",
-    releases
-  );
   const intersection = releases.filter((value) => scopes.includes(value));
-  console.log("Found scopes", intersection);
+  console.log("Scopes:", scopes, "∩", releases, "=", intersection);
   return intersection.length > 0;
 }
 

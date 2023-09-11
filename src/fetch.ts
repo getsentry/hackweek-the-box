@@ -23,7 +23,6 @@ interface SentryCommit extends Omit<Commit, "releases"> {
 
 export async function getNewCommits(): Promise<Commit[]> {
   const releases = await getNewReleases();
-  console.log("Found", releases.length, "new releases");
 
   await state.releases.saveAll(releases);
 
@@ -36,13 +35,19 @@ export async function getNewCommits(): Promise<Commit[]> {
     (acc, val) => acc.concat(val),
     []
   );
-  console.log("Found total of", flattenedCommits.length, "commits");
 
   const uniqueCommits = new Map(flattenedCommits.map((c) => [c.id, c]));
   const sentryRepoCommits = [...uniqueCommits.values()].filter(
     (commit) => commit.repository.name === "getsentry/sentry"
   );
-  console.log("Found", uniqueCommits.size, "unique commits");
+  console.log(
+    "Commits  TOTAL:",
+    flattenedCommits.length,
+    "| unique:",
+    uniqueCommits.size,
+    "| sentry repo:",
+    sentryRepoCommits.length
+  );
 
   return sentryRepoCommits.map(transformCommit);
 }
@@ -60,15 +65,24 @@ async function getNewReleases(): Promise<Release[]> {
         },
       }
     );
-    console.log("Total new releases", releases.length);
     const recentReleases = releases.filter(isRecentlyCreated);
-    console.log("Recent releases", recentReleases.length);
     const relevantReleases = recentReleases.filter(isRelevantRelease);
-    console.log("Relevant releases", relevantReleases.length);
     const previousReleases = await state.releases.getAll();
-    console.log("Previous releases", Object.keys(previousReleases).length);
     const newReleases = relevantReleases.filter(
       (r: Release) => previousReleases[r.version] === undefined
+    );
+
+    console.log(
+      "Releases TOTAL:",
+      releases.length,
+      "| recent:",
+      recentReleases.length,
+      "| relevant:",
+      relevantReleases.length,
+      "| previous:",
+      Object.keys(previousReleases).length,
+      "| new:",
+      newReleases.length
     );
 
     return newReleases;
