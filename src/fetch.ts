@@ -3,7 +3,7 @@ import { state } from "./state.js";
 import axios, { AxiosRequestConfig } from "axios";
 
 const BASE_URL = "https://sentry.sentry.io/api/0";
-const RECENT_THRESHOLD = 1000 * 60 * 5; // 5 minutes
+const RECENT_THRESHOLD = 1000 * 60 * 2; // 2 minutes
 
 const PROJECT_IDS = [
   1, //sentry backend
