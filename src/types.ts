@@ -74,7 +74,7 @@ export type CommitType =
   | "unknown";
 
 interface BaseConfig {
-  voice: Voice;
+  voice?: Voice;
   sound?: Sound;
   light: boolean;
 }
@@ -84,5 +84,5 @@ export interface RuleConfig extends BaseConfig {
 }
 
 export interface AnnouncementConfig extends BaseConfig {
-  message: string;
+  message?: string;
 }

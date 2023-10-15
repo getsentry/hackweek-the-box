@@ -2,11 +2,11 @@
 
 import { program } from "commander";
 import { announce } from "./announcement.js";
-import { Voice } from "./audio.js";
+import { Sound, Voice } from "./audio.js";
 
 program
   .command("play")
-  .argument("<message>, message to play")
+  .argument("[message], message to play")
   .option("-v, --voice <voice>", "voice to use", Voice.en_us_001)
   .option("-s, --sound <sound>", "sound to play", undefined)
   .option("-l, --light <light>", "whether to turn on the light", true)
@@ -18,5 +18,17 @@ program
       light: opts.light === true || opts.light === "true",
     });
   });
+
+program.command("wednesday").action(async () => {
+  await announce({
+    message: "Do you know what is today?",
+    voice: Voice.en_us_006,
+    light: true,
+  });
+  await announce({
+    sound: Sound.WEDNESDAY,
+    light: true,
+  });
+});
 
 program.parse();

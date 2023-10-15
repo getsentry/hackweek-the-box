@@ -8,7 +8,10 @@ import { AnnouncementConfig } from "./types.js";
 export async function announce(config: AnnouncementConfig) {
   console.log("Announcing", config.message);
 
-  const messageAudioFile = await generateMp3(config.message, config.voice);
+  let messageAudioFile;
+  if (config.message && config.voice) {
+    messageAudioFile = await generateMp3(config.message, config.voice);
+  }
 
   if (config.light) {
     await lightOn();
@@ -17,7 +20,10 @@ export async function announce(config: AnnouncementConfig) {
   if (config.sound) {
     await playSound(config.sound);
   }
-  await playFile(messageAudioFile);
+
+  if (messageAudioFile) {
+    await playFile(messageAudioFile);
+  }
 
   if (config.light) {
     await lightOff();
