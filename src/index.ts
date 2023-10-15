@@ -8,6 +8,7 @@ import { initLight } from "./light.js";
 import { initSentry } from "./sentry.js";
 import { announce } from "./announcement.js";
 import { getPRScopes } from "./pr.js";
+import * as Sentry from "@sentry/node";
 
 dotenv.config();
 
@@ -20,6 +21,7 @@ const main = async () => {
 };
 
 export async function checkForNewCommits() {
+  const tx = Sentry.startTransaction({ name: "checkForNewCommits" });
   console.log(`Checking for new commits (${new Date().toISOString()})`);
   const commits = await getNewCommits();
   const rules = await state.rules.getAll();
@@ -28,6 +30,7 @@ export async function checkForNewCommits() {
     await checkCommit(commit, rules);
   }
   console.log(`Finished check (${new Date().toISOString()})`);
+  tx.finish();
 }
 
 async function checkCommit(commit: Commit, rules: Rule[]) {
@@ -77,8 +80,4 @@ function makeTestCommit(commit: Commit): Commit {
   return commit;
 }
 
-try {
-  main();
-} catch (e) {
-  console.error(e);
-}
+main();
