@@ -1,6 +1,7 @@
 import { Commit, Release } from "./types.js";
 import { state } from "./state.js";
 import axios, { AxiosRequestConfig } from "axios";
+import { mapKeys } from "radash";
 
 const BASE_URL = "https://sentry.sentry.io/api/0";
 const RECENT_THRESHOLD = 1000 * 60 * 2; // 2 minutes
@@ -65,18 +66,19 @@ async function getNewReleases(): Promise<Release[]> {
         },
       }
     );
-    const recentReleases = releases.filter(isRecentlyCreated);
-    const relevantReleases = recentReleases.filter(isRelevantRelease);
+
+    const relevantReleases = releases.filter(isRelevantRelease);
+
     const previousReleases = await state.releases.getAll();
+    const versionReleases = mapKeys(previousReleases, (_, r) => r.version);
+
     const newReleases = relevantReleases.filter(
-      (r: Release) => previousReleases[r.version] === undefined
+      (r: Release) => versionReleases[r.version] === undefined
     );
 
     console.log(
       "Releases TOTAL:",
       releases.length,
-      "| recent:",
-      recentReleases.length,
       "| relevant:",
       relevantReleases.length,
       "| previous:",
@@ -133,18 +135,6 @@ function isRelevantRelease(release: Release): boolean {
     release.lastDeploy.environment === "prod" &&
     ["frontend", "backend"].includes(release.versionInfo.package)
   );
-}
-
-function isRecentlyCreated(release: Release): boolean {
-  if (process.env.NODE_ENV === "dev") {
-    return true;
-  }
-  const created = new Date(release.dateCreated);
-  const now = new Date();
-
-  const diff = now.getTime() - created.getTime();
-
-  return diff < RECENT_THRESHOLD;
 }
 
 function transformCommit(commit: SentryCommit): Commit {

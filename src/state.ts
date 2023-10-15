@@ -35,8 +35,8 @@ async function saveRule(rule: Rule): Promise<void> {
 
 export const state = {
   releases: {
-    get: (id: string) => db.findOne("releases", id),
-    getAll: () => db.findAll("releases"),
+    get: (id: string) => db.findOne<Release>("releases", id),
+    getAll: () => db.findAll<Release>("releases"),
     save: (data: Release) => db.save("releases", data),
     saveAll: (data: Release[]) => db.saveAll("releases", data),
   },
@@ -50,4 +50,3 @@ export const state = {
     getAll: getRules,
   },
 };
-

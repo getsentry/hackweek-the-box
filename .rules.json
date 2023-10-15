@@ -40,5 +40,13 @@
     "play": {
       "nickname": "Arthur"
     }
+  },
+  {
+    "match": {
+      "author": "azaslavsky@users.noreply.github.com"
+    },
+    "play": {
+      "nickname": "Alex Z"
+    }
   }
 ]
