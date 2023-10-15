@@ -1,8 +1,8 @@
 import assert from "node:assert";
 import { describe, it } from "node:test";
-import { getAnnounceMessage } from "./message.js";
-import { Commit } from "./types.js";
-import { parseCommit } from "./utils.js";
+import { getAnnounceMessage } from "../message.js";
+import { Commit } from "../types.js";
+import { parseCommit } from "../utils.js";
 
 const parseAndConstruct = (message: string) => {
   const commit = { message } as Commit;

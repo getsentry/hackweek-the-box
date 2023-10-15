@@ -6,9 +6,9 @@
   "type": "module",
   "scripts": {
     "build": "npx tsc",
-    "start": "node dist/index.js",
-    "test": "node --loader ts-node/esm ./src/*spec.ts",
-    "dev:debug": "nodemon ./src/index.ts --trace-warnings",
+    "start": "node --no-warnings dist/index.js",
+    "test": "node --no-warnings --test --loader ts-node/esm ./src/tests/*.spec.ts",
+    "dev:debug": "nodemon --no-warnings ./src/index.ts --trace-warnings",
     "start:prod": "npm run build && node dist/index.js"
   },
   "bin": "./dist/cli.js",

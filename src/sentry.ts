@@ -11,6 +11,7 @@ export function initSentry() {
     dsn,
     tracesSampleRate: 1.0,
     sampleRate: 1.0,
+    release: "the-box@" + process.env.npm_package_version,
     integrations: [new ProfilingIntegration()],
   });
 }

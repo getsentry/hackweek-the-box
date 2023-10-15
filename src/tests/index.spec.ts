@@ -1,7 +1,7 @@
 import assert from "node:assert";
-import * as fetch from "../src/fetch.js";
+import * as fetch from "../fetch.js";
 import { describe, it, mock } from "node:test";
-import { checkForNewCommits } from "../src/index.js";
+import { checkForNewCommits } from "../index.js";
 
 describe("checkForNewCommits", () => {
   it("test", async () => {
