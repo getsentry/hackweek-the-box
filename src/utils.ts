@@ -14,25 +14,34 @@ export const runEvery = (seconds: number, fn: () => void) => {
 };
 
 export const parseCommit = (commit: Commit): ParsedCommit => {
-  if (commit.message.startsWith("Revert")) {
-    const originalMessage = commit.message.match(/Revert "(.*)"/)?.[1];
+  try {
+    if (commit.message.startsWith("Revert")) {
+      const originalMessage = commit.message.match(/Revert "(.*)"/)?.[1];
 
-    const parsed = parseCommit({
-      ...commit,
-      message: originalMessage || "",
-    });
+      const parsed = parseCommit({
+        ...commit,
+        message: originalMessage || "",
+      });
 
-    return { ...parsed, type: "revert" };
+      return { ...parsed, type: "revert" };
+    }
+
+    const { type, scope, subject } = parser.sync(commit.message);
+
+    const parsedType = type ? type.trim() : "unknown";
+
+    return {
+      type: parsedType as CommitType,
+      scope: scope ? scope.trim() : undefined,
+      subject: subject ? subject.trim() : commit.message,
+      author: commit.author,
+    };
+  } catch (err) {
+    return {
+      type: "unknown",
+      scope: undefined,
+      subject: commit.message,
+      author: commit.author,
+    };
   }
-
-  const { type, scope, subject } = parser.sync(commit.message);
-
-  const parsedType = type ? type.trim() : "unknown";
-
-  return {
-    type: parsedType as CommitType,
-    scope: scope ? scope.trim() : undefined,
-    subject: subject ? subject.trim() : commit.message,
-    author: commit.author,
-  };
 };
