@@ -52,16 +52,22 @@ export enum Voice {
 }
 
 export async function playSound(sound: Sound) {
-  return playFile(getAssetPath(SoundFileMap[sound]));
+  const path = getAssetPath(SoundFileMap[sound]);
+  console.log("playSound", new Date().toISOString().slice(17, 23));
+  return playFile(path);
 }
 
 export async function playFile(file: string) {
   const system = process.platform;
 
   if (system === "darwin") {
+    console.log("playFile", new Date().toISOString().slice(17, 23));
     shell.exec(`afplay ${file}`);
+    console.log("playFile", new Date().toISOString().slice(17, 23));
   } else if (system === "linux") {
+    console.log("playFile", new Date().toISOString().slice(17, 23));
     shell.exec(`DISPLAY=:0 mpg123 ${file}`);
+    console.log("playFile", new Date().toISOString().slice(17, 23));
   } else {
     throw new Error(`Unsupported platform: ${system}`);
   }

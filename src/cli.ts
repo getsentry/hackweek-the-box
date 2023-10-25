@@ -35,6 +35,7 @@ program
   .command("sound")
   .argument("[sound], sound to play")
   .action(async (sound) => {
+    console.log("cli", new Date().toISOString().slice(17, 23));
     await playSound(sound);
   });
 
