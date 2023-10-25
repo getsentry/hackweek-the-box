@@ -20,7 +20,6 @@ export function readAsset(file: string) {
 }
 
 export function getAssetPath(file: string) {
-  console.log("getAssetPath", new Date().toISOString().slice(17, 23));
   return join(ASSET_BASE_PATH, file);
 }
 
