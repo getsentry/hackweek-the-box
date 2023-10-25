@@ -2,7 +2,7 @@
 
 import { program } from "commander";
 import { announce } from "./announcement.js";
-import { Sound, Voice } from "./audio.js";
+import { Sound, Voice, playSound } from "./audio.js";
 
 program
   .command("play")
@@ -30,5 +30,12 @@ program.command("wednesday").action(async () => {
     light: true,
   });
 });
+
+program
+  .command("sound")
+  .argument("[sound], sound to play")
+  .action(async (sound) => {
+    await playSound(sound);
+  });
 
 program.parse();
