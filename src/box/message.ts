@@ -1,5 +1,5 @@
-import { ParsedCommit } from "./types.js";
-import capitalize from "lodash.capitalize";
+import type { ParsedCommit } from "./types.js";
+import { capitalize } from "radash";
 
 export function getAnnounceMessage(
   { type, scope, subject = "something" }: ParsedCommit,

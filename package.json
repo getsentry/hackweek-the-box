@@ -5,13 +5,13 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "build": "npx tsc",
-    "start": "node --no-warnings dist/index.js",
-    "test": "node --no-warnings --test --loader ts-node/esm ./src/tests/*.spec.ts",
-    "dev:debug": "nodemon ./src/index.ts --trace-warnings",
-    "start:prod": "npm run build && node dist/index.js"
+    "dev": "astro dev",
+    "start": "astro dev",
+    "build": "astro check && astro build",
+    "preview": "astro preview",
+    "astro": "astro",
+    "test": "vitest"
   },
-  "bin": "./dist/cli.js",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/getsentry/the-box.git"
@@ -25,25 +25,23 @@
   "homepage": "https://github.com/getsentry/the-box#readme",
   "devDependencies": {
     "@types/conventional-commits-parser": "^3.0.3",
-    "@types/lodash.capitalize": "^4.2.7",
     "@types/node": "^20.5.1",
     "@types/shelljs": "^0.8.12",
-    "nodemon": "^3.0.1",
-    "ts-node": "^10.9.1",
-    "tsconfig-paths": "^4.2.0",
     "typescript": "^5.1.6"
   },
   "dependencies": {
+    "@astrojs/check": "^0.2.1",
+    "@astrojs/node": "^6.0.3",
+    "@sentry/astro": "^7.75.1",
     "@sentry/node": "^7.74.0",
-    "@sentry/profiling-node": "^1.2.1",
     "@types/rpi-gpio": "^2.1.1",
+    "astro": "^3.4.0",
     "axios": "^1.4.0",
-    "commander": "^11.0.0",
     "conventional-commits-parser": "^4.0.0",
     "dotenv": "^16.3.1",
-    "lodash.capitalize": "^4.2.1",
     "lowdb": "^6.0.1",
     "radash": "^11.0.0",
-    "shelljs": "^0.8.5"
+    "shelljs": "^0.8.5",
+    "vitest": "^0.34.6"
   }
 }

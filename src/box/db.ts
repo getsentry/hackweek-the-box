@@ -3,7 +3,7 @@ import { fileURLToPath } from "node:url";
 
 import { Low } from "lowdb";
 import { JSONFile } from "lowdb/node";
-import { Release } from "./types.js";
+import type { Release } from "./types.js";
 
 type Data = {
   releases: Record<string, Release>;
@@ -12,7 +12,7 @@ type Data = {
 };
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const file = join(__dirname, "..", ".db.json");
+const file = join(__dirname, "..", "..", ".db.json");
 
 const adapter = new JSONFile<Data>(file);
 

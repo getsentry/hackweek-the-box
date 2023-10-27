@@ -76,7 +76,7 @@ export type CommitType =
 interface BaseConfig {
   voice?: Voice;
   sound?: Sound;
-  light: boolean;
+  light?: boolean;
 }
 
 export interface RuleConfig extends BaseConfig {

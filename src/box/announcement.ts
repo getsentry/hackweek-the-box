@@ -3,12 +3,18 @@ import { playFile, playSound } from "./audio.js";
 import { getTempPath } from "./file.js";
 import { textToSpeechIt } from "./lib/tiktok.js";
 import { lightOff, lightOn } from "./light.js";
-import { AnnouncementConfig } from "./types.js";
+import type { AnnouncementConfig } from "./types.js";
+import { isLocked, lock, unlock } from "./lock.js";
 
 export async function announce(config: AnnouncementConfig) {
+  if (isLocked()) {
+    console.log("Box is locked, cannot announce");
+    return;
+  }
+  lock();
   console.log("Announcing", config.message);
 
-  let messageAudioFile;
+  let messageAudioFile: string | undefined;
   if (config.message && config.voice) {
     messageAudioFile = await generateMp3(config.message, config.voice);
   }
@@ -28,6 +34,7 @@ export async function announce(config: AnnouncementConfig) {
   if (config.light) {
     await lightOff();
   }
+  unlock();
 }
 
 async function generateMp3(message: string, voice: string) {

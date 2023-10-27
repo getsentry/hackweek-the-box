@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 
 import { program } from "commander";
-import { announce } from "./announcement.js";
-import { Sound, Voice, playSound } from "./audio.js";
+import { announce } from "./../src/announcement.js";
+import { Sound, Voice, playSound } from "./../src/audio.js";
 
 program
   .command("play")
@@ -21,7 +21,7 @@ program
 
 program.command("wednesday").action(async () => {
   await announce({
-    message: "Do you know what is today?",
+    message: "Do you know what is yesterday?",
     voice: Voice.en_us_006,
     light: true,
   });
