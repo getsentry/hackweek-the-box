@@ -27,12 +27,14 @@ export async function getNewCommits(): Promise<Commit[]> {
 
   await state.releases.saveAll(releases);
 
-  const commits = (await Promise.allSettled(releases.map(getCommitsForRelease)))
+  const allCommits = (
+    await Promise.allSettled(releases.map(getCommitsForRelease))
+  )
     .filter((p) => p.status === "fulfilled")
     // @ts-ignore
     .map((p) => p.value);
 
-  const flattenedCommits: SentryCommit[] = commits.reduce(
+  const flattenedCommits: SentryCommit[] = allCommits.reduce(
     (acc, val) => acc.concat(val),
     []
   );
@@ -41,16 +43,26 @@ export async function getNewCommits(): Promise<Commit[]> {
   const sentryRepoCommits = [...uniqueCommits.values()].filter(
     (commit) => commit.repository.name === "getsentry/sentry"
   );
+  const previousCommits = await state.commits.getAll();
+  const newSentryRepoCommits = sentryRepoCommits.filter(
+    (c) => previousCommits[c.id] === undefined
+  );
+
+  const commits = newSentryRepoCommits.map(transformCommit);
+  await state.commits.saveAll(commits);
+
   console.log(
     "Commits  TOTAL:",
     flattenedCommits.length,
     "| unique:",
     uniqueCommits.size,
     "| sentry repo:",
-    sentryRepoCommits.length
+    sentryRepoCommits.length,
+    "| new:",
+    commits.length
   );
 
-  return sentryRepoCommits.map(transformCommit);
+  return commits;
 }
 
 async function getNewReleases(): Promise<Release[]> {

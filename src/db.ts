@@ -8,6 +8,7 @@ import { Release } from "./types.js";
 type Data = {
   releases: Record<string, Release>;
   prs: Record<string, any>;
+  commits: Record<string, any>;
 };
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -15,7 +16,7 @@ const file = join(__dirname, "..", ".db.json");
 
 const adapter = new JSONFile<Data>(file);
 
-const defaultData = { releases: {}, prs: {} };
+const defaultData = { releases: {}, prs: {}, commits: {} };
 
 const db = new Low<Data>(adapter, defaultData);
 

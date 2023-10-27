@@ -1,6 +1,6 @@
 import db from "./db.js";
 import { readFile, writeFile } from "./file.js";
-import { Release, Rule } from "./types.js";
+import { Commit, Release, Rule } from "./types.js";
 
 const RULES_FILENAME = "../.rules.json";
 
@@ -17,6 +17,7 @@ export async function initState(): Promise<void> {
 async function wipe(): Promise<void> {
   await db.clear("prs");
   await db.clear("releases");
+  await db.clear("commits");
 }
 
 async function getRules(): Promise<Rule[]> {
@@ -39,6 +40,10 @@ export const state = {
     getAll: () => db.findAll<Release>("releases"),
     save: (data: Release) => db.save("releases", data),
     saveAll: (data: Release[]) => db.saveAll("releases", data),
+  },
+  commits: {
+    getAll: () => db.findAll<Commit>("commits"),
+    saveAll: (data: Commit[]) => db.saveAll("commits", data),
   },
   PRs: {
     get: (id: string) => db.findOne("prs", id),
