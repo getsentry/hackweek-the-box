@@ -43,13 +43,8 @@ export async function getNewCommits(): Promise<Commit[]> {
   const sentryRepoCommits = [...uniqueCommits.values()].filter(
     (commit) => commit.repository.name === "getsentry/sentry"
   );
-  const previousCommits = await state.commits.getAll();
-  const newSentryRepoCommits = sentryRepoCommits.filter(
-    (c) => previousCommits[c.id] === undefined
-  );
 
-  const commits = newSentryRepoCommits.map(transformCommit);
-  await state.commits.saveAll(commits);
+  const commits = sentryRepoCommits.map(transformCommit);
 
   console.log(
     "Commits  TOTAL:",

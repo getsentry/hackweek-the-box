@@ -54,6 +54,12 @@ async function checkCommit(commit: Commit, rules: Rule[]) {
     return;
   }
 
+  const alreadyAnnounced = await checkIfAlreadyAnnounced(commit);
+  if (alreadyAnnounced) {
+    console.log("Ignoring - already announced", commit.message);
+    return;
+  }
+
   await announce(config);
 
   await sleep(2000);
@@ -66,6 +72,17 @@ async function checkReleaseScope(commit: Commit) {
   const intersection = releases.filter((value) => scopes.includes(value));
   console.log("Scopes:", scopes, "∩", releases, "=", intersection);
   return intersection.length > 0;
+}
+
+async function checkIfAlreadyAnnounced(commit: Commit) {
+  const previousCommits = await state.commits.getAll();
+  if (previousCommits[commit.id]) {
+    return true;
+  }
+  previousCommits[commit.id] = commit;
+  await state.commits.saveAll(Object.values(previousCommits));
+
+  return false;
 }
 
 function makeTestCommit(commit: Commit): Commit {
