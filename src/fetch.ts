@@ -96,11 +96,7 @@ async function getNewReleases(): Promise<Release[]> {
 
     return newReleases;
   } catch (e) {
-    console.error(
-      "Error fetching releases",
-      // @ts-expect-error Axios errors
-      e.response.data.detail || e.response.data || e.message
-    );
+    logError("Error fetching releases", e);
     return [];
   }
 }
@@ -115,12 +111,7 @@ async function getCommitsForRelease(release: Release): Promise<SentryCommit[]> {
 
     return res.data;
   } catch (e) {
-    console.error(
-      "Error fetching commits of release",
-      release.version,
-      // @ts-expect-error Axios errors
-      e.response.data.detail || e.response.data || e.message
-    );
+    logError("Error fetching commits of release", e);
     return [];
   }
 }
@@ -161,4 +152,12 @@ function getReleaseScope(release: Release): string {
 
 function getProjectSlug(release: Release): string {
   return release?.projects?.[0].slug ?? "sentry";
+}
+
+function logError(message: string, error: any) {
+  if (error.response) {
+    console.error(message, error.response.data.detail || error.response.data);
+  } else {
+    console.error(message, error.message);
+  }
 }
