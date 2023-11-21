@@ -47,7 +47,7 @@ program
     const randomRestaurant = restaurants[randomIndex];
 
     await announce({
-      message: "You should go to " + randomRestaurant,
+      message: `You should go to ${randomRestaurant}!`,
       voice: Voice.en_us_006,
       light: true,
     });
