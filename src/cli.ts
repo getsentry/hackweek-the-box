@@ -41,7 +41,11 @@ program
 program
   .command("lunch")
   .action(async () => {
-    const restaurants = ["Dean & David", "Bao Bar", "Max & Benito", "Noodle King", "Coconut Curry", "Ilkim Kebap", "Da Rose"];
+    const slowRestaurants = ["Coconut Curry", "Da Rose", "Mochi Ramen", "Koi Asian"]
+    const fastRestaurants = ["Dean & David", "Bao Bar", "Max & Benito", "Noodle King", "Ilkim Kebap", "Canteen"];
+
+    const isFriday = new Date().getDay() === 5;
+    const restaurants = isFriday ? slowRestaurants : fastRestaurants;
 
     const randomIndex = Math.floor(Math.random() * restaurants.length);
     const randomRestaurant = restaurants[randomIndex];
