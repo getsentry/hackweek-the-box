@@ -38,4 +38,19 @@ program
     await playSound(sound);
   });
 
+program
+  .command("lunch")
+  .action(async () => {
+    const restaurants = ["Dean & David", "Bao Bar", "Max & Benito", "Noodle King", "Coconut Curry", "Ilkim Kebap", "Da Rose"];
+
+    const randomIndex = Math.floor(Math.random() * restaurants.length);
+    const randomRestaurant = restaurants[randomIndex];
+
+    await announce({
+      message: "You should go to " + randomRestaurant,
+      voice: Voice.en_us_006,
+      light: true,
+    });
+  });
+
 program.parse();
