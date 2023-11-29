@@ -34,27 +34,37 @@ program.command("wednesday").action(async () => {
 program
   .command("sound")
   .argument("[sound], sound to play")
-  .action(async (sound) => {
+  .action(async (sound: Sound) => {
     await playSound(sound);
   });
 
-program
-  .command("lunch")
-  .action(async () => {
-    const slowRestaurants = ["Coconut Curry", "Da Rose", "Mochi Ramen", "Koi Asian"]
-    const fastRestaurants = ["Dean & David", "Bao Bar", "Max & Benito", "Noodle King", "Ilkim Kebap", "Canteen"];
+program.command("lunch").action(async () => {
+  const slowRestaurants = [
+    "Coconut Curry",
+    "Da Rose",
+    "Mochi Ramen",
+    "Koi Asian",
+  ];
+  const fastRestaurants = [
+    "Dean & David",
+    "Bao Bar",
+    "Max & Benito",
+    "Noodle King",
+    "Ilkim Kebap",
+    "Canteen",
+  ];
 
-    const isFriday = new Date().getDay() === 5;
-    const restaurants = isFriday ? slowRestaurants : fastRestaurants;
+  const isFriday = new Date().getDay() === 5;
+  const restaurants = isFriday ? slowRestaurants : fastRestaurants;
 
-    const randomIndex = Math.floor(Math.random() * restaurants.length);
-    const randomRestaurant = restaurants[randomIndex];
+  const randomIndex = Math.floor(Math.random() * restaurants.length);
+  const randomRestaurant = restaurants[randomIndex];
 
-    await announce({
-      message: `You should go to ${randomRestaurant}!`,
-      voice: Voice.en_us_006,
-      light: true,
-    });
+  await announce({
+    message: `It is lunch time! You should go to ${randomRestaurant}!`,
+    voice: Voice.en_us_006,
+    light: true,
   });
+});
 
 program.parse();
