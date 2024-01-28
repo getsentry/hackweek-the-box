@@ -10,6 +10,11 @@ export default defineConfig({
     mode: "middleware",
   }),
   vite: {
+    server: {
+      watch: {
+        ignored: [".db.json", "./.db.json"],
+      },
+    },
     build: {
       manifest: true,
       rollupOptions: {

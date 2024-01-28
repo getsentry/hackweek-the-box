@@ -18,8 +18,10 @@ const toAnnouncementConfig = (body: unknown): AnnouncementConfig => {
 
   const voice = Voice[body["voice"]] ?? Voice.en_us_001;
   const light = Boolean(body["light"]);
+  const sound = body["sound"];
 
   return {
+    sound,
     message,
     voice,
     light,

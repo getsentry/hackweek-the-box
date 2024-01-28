@@ -3,7 +3,6 @@ import { Sound, Voice } from "../box/audio";
 
 export async function GET() {
   await announce({
-    sound: Sound.NOICE,
     message: "Do you know what is today?",
     voice: Voice.en_us_006,
     light: false,
