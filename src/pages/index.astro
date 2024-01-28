@@ -1,6 +1,5 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import Card from '../components/Card.astro';
 
 ---
 
@@ -34,35 +33,65 @@ import Card from '../components/Card.astro';
 				</linearGradient>
 			</defs>
 		</svg>
-		<h1>Welcome to <span class="text-gradient">Astro</span></h1>
-		<p class="instructions">
-			To get started, open the directory <code>src/pages</code> in your project.<br />
-			<strong>Code Challenge:</strong> Tweak the "Welcome to Astro" message above.
-		</p>
-		<ul role="list" class="link-card-grid">
-			<Card
-				href="https://docs.astro.build/"
-				title="Documentation"
-				body="Learn how Astro works and explore the official API docs."
-			/>
-			<Card
-				href="https://astro.build/integrations/"
-				title="Integrations"
-				body="Supercharge your project with new frameworks and libraries."
-			/>
-			<Card
-				href="https://astro.build/themes/"
-				title="Themes"
-				body="Explore a galaxy of community-built starter themes."
-			/>
-			<Card
-				href="https://astro.build/chat/"
-				title="Community"
-				body="Come say hi to our amazing Discord community. ❤️"
-			/>
-		</ul>
+		<h1>THE <span class="text-gradient">BOX</span></h1>
+	
+
+		<div> 
+		<input type="text" id="input-text" placeholder="What does the box say?"/>
+		<button id="play">Play</button>
+		</div>
+
+		<button id="wednesday">Is it wednesday today? Maybe it is, maybe it is not. It actually doesn't matter, this button always does the same thing</button>
+
 	</main>
 </Layout>
+
+<script>
+
+	const playButton = document.getElementById('play') as HTMLButtonElement;
+	playButton.addEventListener('click', fetchPlay);
+
+	const wednesdayButton = document.getElementById('wednesday');
+	wednesdayButton.addEventListener('click', fetchWednesday);
+
+	function fetchPlay() {
+		const inputField = document.getElementById('input-text') as HTMLInputElement;
+		const message = inputField.value;
+
+		if (!message) return alert('How about actually typing something in?');
+		if (message.length > 255) return alert('Take your novel and tell ChatGPT to summarize it, then come back. ');
+
+
+		playButton.disabled = true;
+		fetch('http://localhost:4321/play', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify({ message })
+		})
+		.then(response => response.json())
+		.then(data => {
+			playButton.disabled = false;
+		})
+		.catch(error => {
+			alert('BORKED')
+		});
+	}
+
+	function fetchWednesday() {
+		wednesdayButton.disabled = true;
+		fetch('http://localhost:4321/wednesday')
+		.then(response => response.json())
+		.then(data => {
+			wednesdayButton.disabled = false;
+			// Handle the response data here
+		})
+		.catch(error => {
+			alert('BORKED')
+		});
+	}
+</script>
 
 <style>
 	main {
@@ -120,5 +149,35 @@ import Card from '../components/Card.astro';
 		grid-template-columns: repeat(auto-fit, minmax(24ch, 1fr));
 		gap: 2rem;
 		padding: 0;
+	}
+
+	button, input {
+        background-color: rgba(var(--accent-dark), 66%);
+        color: rgb(var(--accent-light));
+        border: none;
+        padding: 0.5rem 1rem;
+        border-radius: 4px;
+        font-size: 1rem;
+        cursor: pointer;
+				border: 1px solid rgba(var(--accent-light), 25%);
+    }
+
+	button:disabled, input:disabled {
+		opacity: 0.5;
+		cursor: not-allowed;
+	}
+
+	div {
+		display: flex;
+		flex-direction: row;
+		align-items: center;
+		justify-content: center;
+		gap: 1rem;
+		padding: 1rem 0;
+	}
+
+	input[type="text"], input[type="email"], input[type="number"] {
+		width: 100%;
+			padding: 0.5rem;
 	}
 </style>
