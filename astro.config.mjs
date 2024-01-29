@@ -39,7 +39,8 @@ export default defineConfig({
     {
       name: "box",
       hooks: {
-        "astro:server:start": () => {
+        "astro:config:setup": () => {
+          console.log("starting box");
           main();
         },
       },
