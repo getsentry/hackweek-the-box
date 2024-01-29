@@ -51,7 +51,7 @@ import Layout from '../layouts/Layout.astro';
 	const playButton = document.getElementById('play') as HTMLButtonElement;
 	playButton.addEventListener('click', fetchPlay);
 
-	const wednesdayButton = document.getElementById('wednesday');
+	const wednesdayButton = document.getElementById('wednesday')  as HTMLButtonElement;;
 	wednesdayButton.addEventListener('click', fetchWednesday);
 
 	function fetchPlay() {
