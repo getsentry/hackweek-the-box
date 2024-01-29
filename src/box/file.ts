@@ -6,10 +6,8 @@ import { fileURLToPath } from "node:url";
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
 const getAssetBasePath = () => {
-  if (process.env.NODE_ENV === "production") {
-    return join(__dirname, "..", "..", "..", "client", "assets");
-  }
-  return join(__dirname, "..", "..", "public", "assets");
+  // symlinked
+  return join("~", "box-assets");
 };
 
 export function readFile(path: string) {

@@ -1,13 +1,13 @@
+import * as Sentry from "@sentry/astro";
 import { config } from "dotenv";
+import { announce } from "./announcement.js";
+import { getAnnouncementConfig } from "./config.js";
 import { getNewCommits } from "./fetch.js";
-import { state, initState } from "./state.js";
+import { initLight } from "./light.js";
+import { getPRScopes } from "./pr.js";
+import { initState, state } from "./state.js";
 import type { Commit, Rule } from "./types.js";
 import { parseCommit, runEvery, sleep } from "./utils.js";
-import { getAnnouncementConfig } from "./config.js";
-import { initLight } from "./light.js";
-import { announce } from "./announcement.js";
-import { getPRScopes } from "./pr.js";
-import * as Sentry from "@sentry/astro";
 
 config();
 
@@ -18,7 +18,6 @@ export const main = async () => {
     sampleRate: 1.0,
     release: "the-box@" + process.env.npm_package_version,
   });
-  console.log("Starting box");
   initLight();
   await initState();
 

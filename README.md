@@ -1,5 +1,11 @@
 # the-box
 
+# setup
+
+```bash
+ln -s ~/repos/hackweek-the-box/dist/client/assets/ ~/box-assets
+```
+
 ## TODOS
 
 - add linter
