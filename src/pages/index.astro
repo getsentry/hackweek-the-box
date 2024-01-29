@@ -47,7 +47,7 @@ import Layout from '../layouts/Layout.astro';
 </Layout>
 
 <script>
-
+	const url = window.location.href
 	const playButton = document.getElementById('play') as HTMLButtonElement;
 	playButton.addEventListener('click', fetchPlay);
 
@@ -63,7 +63,7 @@ import Layout from '../layouts/Layout.astro';
 
 
 		playButton.disabled = true;
-		fetch('http://localhost:4321/play', {
+		fetch(`${url}/play`, {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json'
@@ -81,7 +81,7 @@ import Layout from '../layouts/Layout.astro';
 
 	function fetchWednesday() {
 		wednesdayButton.disabled = true;
-		fetch('http://localhost:4321/wednesday')
+		fetch(`${url}/wednesday`)
 		.then(response => response.json())
 		.then(data => {
 			wednesdayButton.disabled = false;
