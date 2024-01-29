@@ -1,19 +1,24 @@
-import dotenv from "dotenv";
+import { config } from "dotenv";
 import { getNewCommits } from "./fetch.js";
 import { state, initState } from "./state.js";
-import { Commit, Rule } from "./types.js";
+import type { Commit, Rule } from "./types.js";
 import { parseCommit, runEvery, sleep } from "./utils.js";
 import { getAnnouncementConfig } from "./config.js";
 import { initLight } from "./light.js";
-import { initSentry } from "./sentry.js";
 import { announce } from "./announcement.js";
 import { getPRScopes } from "./pr.js";
-import * as Sentry from "@sentry/node";
+import * as Sentry from "@sentry/astro";
 
-dotenv.config();
+config();
 
-const main = async () => {
-  initSentry();
+export const main = async () => {
+  Sentry.init({
+    dsn: process.env.SENTRY_DSN,
+    tracesSampleRate: 1.0,
+    sampleRate: 1.0,
+    release: "the-box@" + process.env.npm_package_version,
+  });
+  console.log("Starting box");
   initLight();
   await initState();
 
@@ -36,12 +41,12 @@ export async function checkForNewCommits() {
 async function checkCommit(commit: Commit, rules: Rule[]) {
   console.log("Checking commit", commit.message);
   // plays every commit in dev mode
-  if (process.env.NODE_ENV === "dev") {
+  if (process.env.NODE_ENV === "development") {
     commit = makeTestCommit(commit);
   }
 
   const parsedCommit = parseCommit(commit);
-  const config = await getAnnouncementConfig(parsedCommit, rules);
+  const config = getAnnouncementConfig(parsedCommit, rules);
 
   if (!config) {
     console.log("Ignoring - no config", commit.message);
@@ -96,5 +101,3 @@ function makeTestCommit(commit: Commit): Commit {
 
   return commit;
 }
-
-main();

@@ -1,8 +1,7 @@
-import assert from "node:assert";
-import { describe, it } from "node:test";
+import { assert, describe, it } from "vitest";
 import { Voice } from "../audio.js";
 import { getAnnouncementConfig } from "../config.js";
-import { ParsedCommit, Rule, RuleConfig } from "../types.js";
+import type { ParsedCommit, Rule, RuleConfig } from "../types.js";
 
 function mockParsedCommit(author: string, message: string): ParsedCommit {
   return {
@@ -40,8 +39,10 @@ describe("getAnnouncementConfig", () => {
     const rules = [authorRule(email)];
 
     const config = getAnnouncementConfig(commit, rules);
+    assert.isDefined(config);
 
     assert.equal(
+      // @ts-expect-error - we know it's defined
       config?.message,
       "Nickname just shipped a new feature to dynamic-sampling. Adjust sampling rate!"
     );
@@ -56,12 +57,16 @@ describe("getAnnouncementConfig", () => {
     ];
 
     const config = getAnnouncementConfig(commit, rules);
+    assert.isDefined(config);
 
     assert.equal(
-      config?.message,
+      // @ts-expect-error - we know it's defined
+      config.message,
       "Nickname just shipped a new feature to dynamic-sampling. Adjust sampling rate!"
     );
-    assert.equal(config?.voice, Voice.en_au_001);
+    // @ts-expect-error - we know it's defined
+
+    assert.equal(config.voice, Voice.en_au_001);
   });
 
   it("should return announcement config (sanitized scope match)", () => {

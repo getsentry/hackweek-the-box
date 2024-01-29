@@ -1,10 +1,9 @@
-import { Commit, Release } from "./types.js";
+import type { Commit, Release } from "./types.js";
 import { state } from "./state.js";
-import axios, { AxiosRequestConfig } from "axios";
+import axios, { type AxiosRequestConfig } from "axios";
 import { mapKeys } from "radash";
 
 const BASE_URL = "https://sentry.sentry.io/api/0";
-const RECENT_THRESHOLD = 1000 * 60 * 2; // 2 minutes
 
 const PROJECT_IDS = [
   1, //sentry backend
@@ -31,8 +30,7 @@ export async function getNewCommits(): Promise<Commit[]> {
     await Promise.allSettled(releases.map(getCommitsForRelease))
   )
     .filter((p) => p.status === "fulfilled")
-    // @ts-ignore
-    .map((p) => p.value);
+    .map((p: PromiseFulfilledResult<SentryCommit[]>) => p.value);
 
   const flattenedCommits: SentryCommit[] = allCommits.reduce(
     (acc, val) => acc.concat(val),
@@ -40,7 +38,7 @@ export async function getNewCommits(): Promise<Commit[]> {
   );
 
   const uniqueCommits = new Map(flattenedCommits.map((c) => [c.id, c]));
-  const sentryRepoCommits = [...uniqueCommits.values()].filter(
+  const sentryRepoCommits = Array.from(uniqueCommits.values()).filter(
     (commit) => commit.repository.name === "getsentry/sentry"
   );
 

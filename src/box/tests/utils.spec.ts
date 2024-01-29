@@ -1,7 +1,6 @@
-import { describe, it } from "node:test";
-import { Commit } from "../types.js";
-import { parseCommit } from "../utils.js";
-import assert from "node:assert";
+import type { Commit } from "../types.js";
+import { normalizeString, parseCommit } from "../utils.js";
+import { assert, describe, it } from "vitest";
 
 const commit: Commit = {
   id: "123",
@@ -65,5 +64,46 @@ describe("parseCommit", () => {
     assert.equal(parsedCommit.scope, undefined);
     assert.equal(parsedCommit.subject, "I am not a conventional commit");
     assert.equal(parsedCommit.author.name, "Matej Minar");
+  });
+});
+
+describe("normalizeString", () => {
+  it("should return null when the parameter is not a string", () => {
+    const result = normalizeString(123);
+    assert.strictEqual(result, "");
+  });
+
+  it("should truncate and normalize the string, removing special characters", () => {
+    const parameter = "Hello @World!; #42.";
+    const result = normalizeString(parameter);
+    assert.strictEqual(result, "Hello World!; 42.");
+  });
+
+  it("should handle an empty string and return an empty result", () => {
+    const parameter = "";
+    const result = normalizeString(parameter);
+    assert.strictEqual(result, "");
+  });
+
+  it("should handle a string with only special characters and return an empty result", () => {
+    const parameter = "!@#$%^&*()";
+    const result = normalizeString(parameter);
+    assert.strictEqual(result, "!");
+  });
+
+  it("should handle a string with only alphanumeric characters, dots, commas, and spaces", () => {
+    const parameter = "abc 123.,";
+    const result = normalizeString(parameter);
+    assert.strictEqual(result, "abc 123.,");
+  });
+
+  it("should handle a string with a length greater than 100 characters", () => {
+    const parameter =
+      "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed auctor purus ipsum, vel tempor odio feugiat in.";
+    const result = normalizeString(parameter);
+    assert.strictEqual(
+      result,
+      "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed auctor purus ipsum, vel tempor odio feu"
+    );
   });
 });

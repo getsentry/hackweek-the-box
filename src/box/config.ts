@@ -1,4 +1,9 @@
-import { AnnouncementConfig, Rule, ParsedCommit, RuleConfig } from "./types.js";
+import type {
+  AnnouncementConfig,
+  Rule,
+  ParsedCommit,
+  RuleConfig,
+} from "./types.js";
 import { Voice, getCommitSound } from "./audio.js";
 import { getAnnounceMessage } from "./message.js";
 

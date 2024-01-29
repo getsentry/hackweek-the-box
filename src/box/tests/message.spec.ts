@@ -1,6 +1,5 @@
-import { describe, it } from "node:test";
-import { ParsedCommit } from "../types.js";
-import assert from "node:assert";
+import { assert, describe, it } from "vitest";
+import type { ParsedCommit } from "../types.js";
 import { getAnnounceMessage } from "../message.js";
 
 const toCommit = (type: any, scope: any, subject: any): ParsedCommit => ({

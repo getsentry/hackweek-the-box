@@ -1,17 +1,18 @@
 #!/usr/bin/env node
 
 import { program } from "commander";
-import { announce } from "./announcement.js";
-import { Sound, Voice, playSound } from "./audio.js";
+import axios from "axios";
+
+const baseURL = "http://localhost:4321";
 
 program
   .command("play")
   .argument("[message], message to play")
-  .option("-v, --voice <voice>", "voice to use", Voice.en_us_001)
+  .option("-v, --voice <voice>", "voice to use", "en_us_001")
   .option("-s, --sound <sound>", "sound to play", undefined)
   .option("-l, --light <light>", "whether to turn on the light", true)
-  .action((message, opts) => {
-    announce({
+  .action(async (message, opts) => {
+    await axios.post(`${baseURL}/play`, {
       message,
       voice: opts.voice,
       sound: opts.sound,
@@ -20,22 +21,16 @@ program
   });
 
 program.command("wednesday").action(async () => {
-  await announce({
-    message: "Do you know what is today?",
-    voice: Voice.en_us_006,
-    light: true,
-  });
-  await announce({
-    sound: Sound.WEDNESDAY,
-    light: true,
-  });
+  await axios.get(`${baseURL}/wednesday`);
 });
 
 program
   .command("sound")
   .argument("[sound], sound to play")
-  .action(async (sound: Sound) => {
-    await playSound(sound);
+  .action(async (sound) => {
+    await axios.post(`${baseURL}/play`, {
+      sound,
+    });
   });
 
 program.command("lunch").action(async () => {
@@ -60,9 +55,9 @@ program.command("lunch").action(async () => {
   const randomIndex = Math.floor(Math.random() * restaurants.length);
   const randomRestaurant = restaurants[randomIndex];
 
-  await announce({
+  await axios.post(`${baseURL}/play`, {
     message: `It is lunch time! You should go to ${randomRestaurant}!`,
-    voice: Voice.en_us_006,
+    voice: "en_us_006",
     light: true,
   });
 });
