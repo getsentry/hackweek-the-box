@@ -7,7 +7,7 @@
   "scripts": {
     "dev": "astro dev",
     "start": "astro dev",
-    "start:prod": "astro preview --port 4321",
+    "start:prod": "astro preview --host 0.0.0.0 --port 4321",
     "build": "astro check && astro build",
     "preview": "astro preview",
     "astro": "astro",
