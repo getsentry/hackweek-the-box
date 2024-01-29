@@ -39,7 +39,7 @@
     "@sentry/astro": "^7.75.1",
     "@sentry/node": "^7.74.0",
     "@types/rpi-gpio": "^2.1.1",
-    "astro": "^3.4.0",
+    "astro": "^4.2.6",
     "axios": "^1.4.0",
     "commander": "^11.1.0",
     "conventional-commits-parser": "^4.0.0",
