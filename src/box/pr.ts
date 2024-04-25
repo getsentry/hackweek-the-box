@@ -21,7 +21,7 @@ export async function getPR(id: string) {
   }
 }
 
-export async function getPRScopes(id: string) {
+export async function getPRScopes(id: string): Promise<string[]> {
   const pr = await getPR(id);
   const scopes = pr.labels
     .map((label: any) => label.name.toLowerCase())

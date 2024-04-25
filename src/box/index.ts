@@ -69,13 +69,20 @@ async function checkCommit(commit: Commit, rules: Rule[]) {
   await sleep(2000);
 }
 
-async function checkReleaseScope(commit: Commit) {
-  const scopes = await getPRScopes(commit.pr);
-  const releases = commit.releases;
+// async function checkReleaseScope(commit: Commit) {
+//   const scopes = await getPRScopes(commit.pr);
+//   const releases = commit.releases;
 
-  const intersection = releases.filter((value) => scopes.includes(value));
-  console.log("Scopes:", scopes, "∩", releases, "=", intersection);
-  return intersection.length > 0;
+//   const intersection = releases.filter((value) => scopes.includes(value));
+//   console.log("Scopes:", scopes, "∩", releases, "=", intersection);
+//   return intersection.length > 0;
+// }
+
+// with the new deployment logic, every commit that is deployed to backend twice
+// should be announced
+async function checkReleaseScope(commit: Commit) {
+  const releases = commit.releases;
+  return releases.filter((r) => r === "backend").length >= 2;
 }
 
 async function checkIfAlreadyAnnounced(commit: Commit) {
