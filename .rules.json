@@ -17,15 +17,6 @@
   },
   {
     "match": {
-      "author": "riccardo.busetti@sentry.io"
-    },
-    "play": {
-      "nickname": "Riccardo",
-      "sound": "RICCARDO"
-    }
-  },
-  {
-    "match": {
       "author": "arthur.knaus@sentry.io"
     },
     "play": {
