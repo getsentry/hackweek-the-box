@@ -2,6 +2,7 @@ import type { Commit, Release } from "./types.js";
 import { state } from "./state.js";
 import axios, { type AxiosRequestConfig } from "axios";
 import { mapKeys } from "radash";
+import * as Sentry from "@sentry/astro";
 
 const BASE_URL = "https://sentry.sentry.io/api/0";
 
@@ -22,96 +23,102 @@ interface SentryCommit extends Omit<Commit, "releases"> {
 }
 
 export async function getNewCommits(): Promise<Commit[]> {
-  const releases = await getNewReleases();
+  return Sentry.startSpan({ name: "getNewCommits" }, async () => {
+    const releases = await getNewReleases();
 
-  await state.releases.saveAll(releases);
+    await state.releases.saveAll(releases);
 
-  const allCommits = (
-    await Promise.allSettled(releases.map(getCommitsForRelease))
-  )
-    .filter((p) => p.status === "fulfilled")
-    .map((p: PromiseFulfilledResult<SentryCommit[]>) => p.value);
+    const allCommits = (
+      await Promise.allSettled(releases.map(getCommitsForRelease))
+    )
+      .filter((p) => p.status === "fulfilled")
+      .map((p: PromiseFulfilledResult<SentryCommit[]>) => p.value);
 
-  const flattenedCommits: SentryCommit[] = allCommits.reduce(
-    (acc, val) => acc.concat(val),
-    []
-  );
+    const flattenedCommits: SentryCommit[] = allCommits.reduce(
+      (acc, val) => acc.concat(val),
+      []
+    );
 
-  const uniqueCommits = new Map(flattenedCommits.map((c) => [c.id, c]));
-  const sentryRepoCommits = Array.from(uniqueCommits.values()).filter(
-    (commit) => commit.repository.name === "getsentry/sentry"
-  );
+    const uniqueCommits = new Map(flattenedCommits.map((c) => [c.id, c]));
+    const sentryRepoCommits = Array.from(uniqueCommits.values()).filter(
+      (commit) => commit.repository.name === "getsentry/sentry"
+    );
 
-  const commits = sentryRepoCommits.map(transformCommit);
+    const commits = sentryRepoCommits.map(transformCommit);
 
-  console.log(
-    "Commits  TOTAL:",
-    flattenedCommits.length,
-    "| unique:",
-    uniqueCommits.size,
-    "| sentry repo:",
-    sentryRepoCommits.length,
-    "| new:",
-    commits.length
-  );
+    console.log(
+      "Commits  TOTAL:",
+      flattenedCommits.length,
+      "| unique:",
+      uniqueCommits.size,
+      "| sentry repo:",
+      sentryRepoCommits.length,
+      "| new:",
+      commits.length
+    );
 
-  return commits;
+    return commits;
+  });
 }
 
 async function getNewReleases(): Promise<Release[]> {
-  try {
-    const { data: releases } = await get(
-      `${BASE_URL}/organizations/sentry/releases/`,
-      {
-        params: {
-          per_page: 20,
-          sort: "date",
-          status: "open",
-          project: PROJECT_IDS,
-        },
-      }
-    );
+  return Sentry.startSpan({ name: "getNewReleases" }, async () => {
+    try {
+      const { data: releases } = await get(
+        `${BASE_URL}/organizations/sentry/releases/`,
+        {
+          params: {
+            per_page: 20,
+            sort: "date",
+            status: "open",
+            project: PROJECT_IDS,
+          },
+        }
+      );
 
-    const relevantReleases = releases.filter(isRelevantRelease);
+      const relevantReleases = releases.filter(isRelevantRelease);
 
-    const previousReleases = await state.releases.getAll();
-    const versionReleases = mapKeys(previousReleases, (_, r) => r.version);
+      const previousReleases = await state.releases.getAll();
+      const versionReleases = mapKeys(previousReleases, (_, r) => r.version);
 
-    const newReleases = relevantReleases.filter(
-      (r: Release) => versionReleases[r.version] === undefined
-    );
+      const newReleases = relevantReleases.filter(
+        (r: Release) => versionReleases[r.version] === undefined
+      );
 
-    console.log(
-      "Releases TOTAL:",
-      releases.length,
-      "| relevant:",
-      relevantReleases.length,
-      "| previous:",
-      Object.keys(previousReleases).length,
-      "| new:",
-      newReleases.length
-    );
+      console.log(
+        "Releases TOTAL:",
+        releases.length,
+        "| relevant:",
+        relevantReleases.length,
+        "| previous:",
+        Object.keys(previousReleases).length,
+        "| new:",
+        newReleases.length
+      );
 
-    return newReleases;
-  } catch (e) {
-    logError("Error fetching releases", e);
-    return [];
-  }
+      return newReleases;
+    } catch (e) {
+      logError("Error fetching releases", e);
+      return [];
+    }
+  });
 }
 
 async function getCommitsForRelease(release: Release): Promise<SentryCommit[]> {
-  try {
-    const res = await get(
-      `${BASE_URL}/projects/sentry/${getProjectSlug(release)}/releases/${
-        release.version
-      }/commits/`
-    );
+  return Sentry.startSpan({ name: "getCommitsForRelease" }, async () => {
+    try {
+      const res = await get(
+        `${BASE_URL}/projects/sentry/${getProjectSlug(release)}/releases/${
+          release.version
+        }/commits/`
+      );
 
-    return res.data;
-  } catch (e) {
-    logError("Error fetching commits of release", e);
-    return [];
-  }
+      return res.data;
+    } catch (e) {
+      logError("Error fetching commits of release", e);
+      return [];
+    }
+  });
 }
 
 function get(url: string, config?: AxiosRequestConfig) {
