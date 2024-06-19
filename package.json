@@ -34,11 +34,11 @@
     "typescript": "^5.1.6"
   },
   "dependencies": {
-    "@astrojs/check": "^0.2.1",
-    "@astrojs/node": "^6.0.3",
+    "@astrojs/check": "^0.7.0",
+    "@astrojs/node": "^8.3.1",
     "@sentry/astro": "^8.9.2",
     "@types/rpi-gpio": "^2.1.1",
-    "astro": "^3.4.0",
+    "astro": "^4.10.3",
     "axios": "^1.4.0",
     "commander": "^11.1.0",
     "conventional-commits-parser": "^4.0.0",

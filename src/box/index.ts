@@ -25,16 +25,16 @@ export const main = async () => {
 };
 
 export async function checkForNewCommits() {
-  const tx = Sentry.startTransaction({ name: "checkForNewCommits" });
-  console.log(`Checking for new commits (${new Date().toISOString()})`);
-  const commits = await getNewCommits();
-  const rules = await state.rules.getAll();
+  return Sentry.startSpan({ name: "checkForNewCommits" }, async () => {
+    console.log(`Checking for new commits (${new Date().toISOString()})`);
+    const commits = await getNewCommits();
+    const rules = await state.rules.getAll();
 
-  for (const commit of commits) {
-    await checkCommit(commit, rules);
-  }
-  console.log(`Finished check (${new Date().toISOString()})`);
-  tx.finish();
+    for (const commit of commits) {
+      await checkCommit(commit, rules);
+    }
+    console.log(`Finished check (${new Date().toISOString()})`);
+  });
 }
 
 async function checkCommit(commit: Commit, rules: Rule[]) {
