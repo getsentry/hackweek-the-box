@@ -8,6 +8,7 @@ import { getPRScopes } from "./pr.js";
 import { initState, state } from "./state.js";
 import type { Commit, Rule } from "./types.js";
 import { parseCommit, runEvery, sleep } from "./utils.js";
+import { getCurrentVersion } from "./utils";
 
 config();
 
@@ -16,7 +17,9 @@ export const main = async () => {
     dsn: process.env.SENTRY_DSN,
     tracesSampleRate: 1.0,
     sampleRate: 1.0,
-    release: "the-box@" + process.env.npm_package_version,
+    release: "the-box@" + getCurrentVersion(),
+    environment: process.env.NODE_ENV,
+    
   });
   initLight();
   await initState();
@@ -25,16 +28,25 @@ export const main = async () => {
 };
 
 export async function checkForNewCommits() {
-  return Sentry.startSpan({ name: "checkForNewCommits" }, async () => {
-    console.log(`Checking for new commits (${new Date().toISOString()})`);
-    const commits = await getNewCommits();
-    const rules = await state.rules.getAll();
+  return Sentry.startSpan(
+    { name: "checkForNewCommits", op: "function" },
+    async () => {
+      console.log(`Checking for new commits (${new Date().toISOString()})`);
+      const commits = await getNewCommits();
 
-    for (const commit of commits) {
-      await checkCommit(commit, rules);
+      if (commits.length === 0) {
+        console.log("No new commits");
+        return;
+      }
+
+      const rules = await state.rules.getAll();
+
+      for (const commit of commits) {
+        await checkCommit(commit, rules);
+      }
+      console.log(`Finished check (${new Date().toISOString()})`);
     }
-    console.log(`Finished check (${new Date().toISOString()})`);
-  });
+  );
 }
 
 async function checkCommit(commit: Commit, rules: Rule[]) {
@@ -69,31 +81,55 @@ async function checkCommit(commit: Commit, rules: Rule[]) {
   await sleep(2000);
 }
 
-// async function checkReleaseScope(commit: Commit) {
-//   const scopes = await getPRScopes(commit.pr);
-//   const releases = commit.releases;
-
-//   const intersection = releases.filter((value) => scopes.includes(value));
-//   console.log("Scopes:", scopes, "∩", releases, "=", intersection);
-//   return intersection.length > 0;
-// }
-
-// with the new deployment logic, every commit that is deployed to backend twice
-// should be announced
 async function checkReleaseScope(commit: Commit) {
-  const releases = commit.releases;
-  return releases.filter((r) => r === "backend").length >= 2;
+  return Sentry.startSpan(
+    { name: "checkReleaseScope", op: "function" },
+    async (span) => {
+      const scopes = await getPRScopes(commit.pr);
+      const releases = commit.releases;
+
+      span.setAttributes({ scopes, releases });
+
+      const frontendMatch = releases.includes("frontend");
+      const backendMatch =
+        releases.filter((value) => value === "backend").length >= 2;
+
+      if (scopes.includes("frontend") && scopes.includes("backend")) {
+        return frontendMatch && backendMatch;
+      }
+
+      if (scopes.includes("frontend")) {
+        return frontendMatch;
+      }
+      if (scopes.includes("backend")) {
+        return backendMatch;
+      }
+    }
+  );
 }
 
-async function checkIfAlreadyAnnounced(commit: Commit) {
-  const previousCommits = await state.commits.getAll();
-  if (previousCommits[commit.id]) {
-    return true;
-  }
-  previousCommits[commit.id] = commit;
-  await state.commits.saveAll(Object.values(previousCommits));
+// // with the new deployment logic, every commit that is deployed to backend twice
+// // should be announced
+// async function checkReleaseScope(commit: Commit) {
+//   const releases = commit.releases;
+//   console.log(releases);
+//   return releases.filter((r) => r === "backend").length >= 2;
+// }
 
-  return false;
+async function checkIfAlreadyAnnounced(commit: Commit) {
+  return Sentry.startSpan(
+    { name: "checkIfAlreadyAnnounced", op: "function" },
+    async () => {
+      const previousCommits = await state.commits.getAll();
+      if (previousCommits[commit.id]) {
+        return true;
+      }
+      previousCommits[commit.id] = commit;
+      await state.commits.saveAll(Object.values(previousCommits));
+
+      return false;
+    }
+  );
 }
 
 function makeTestCommit(commit: Commit): Commit {
