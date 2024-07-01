@@ -19,7 +19,6 @@ export const main = async () => {
     sampleRate: 1.0,
     release: "the-box@" + getCurrentVersion(),
     environment: process.env.NODE_ENV,
-    
   });
   initLight();
   await initState();
@@ -91,8 +90,7 @@ async function checkReleaseScope(commit: Commit) {
       span.setAttributes({ scopes, releases });
 
       const frontendMatch = releases.includes("frontend");
-      const backendMatch =
-        releases.filter((value) => value === "backend").length >= 2;
+      const backendMatch = releases.includes("backend");
 
       if (scopes.includes("frontend") && scopes.includes("backend")) {
         return frontendMatch && backendMatch;
@@ -104,6 +102,8 @@ async function checkReleaseScope(commit: Commit) {
       if (scopes.includes("backend")) {
         return backendMatch;
       }
+
+      return false;
     }
   );
 }
