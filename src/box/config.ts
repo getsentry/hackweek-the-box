@@ -7,7 +7,6 @@ import type {
 import { Voice, getCommitSound } from "./audio.js";
 import { getAnnounceMessage } from "./message.js";
 import * as Sentry from "@sentry/astro";
-import { S } from "../../dist/server/chunks/announcement_CRWFvnK5.mjs";
 
 /*
  * This function takes a commit and a list of rules and returns a PlayConfig
