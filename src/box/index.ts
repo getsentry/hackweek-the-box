@@ -51,7 +51,7 @@ export async function checkForNewCommits() {
 async function checkCommit(commit: Commit, rules: Rule[]) {
   console.log("Checking commit", commit.message);
   // plays every commit in dev mode
-  if (process.env.NODE_ENV === "development") {
+  if (process.env.NODE_ENV === "dev") {
     commit = makeTestCommit(commit);
   }
 
