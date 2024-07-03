@@ -21,7 +21,7 @@ export const main = async () => {
   });
   initLight();
   await initState();
-
+  console.log("Starting");
   runEvery(60, checkForNewCommits);
 };
 
