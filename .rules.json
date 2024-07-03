@@ -46,5 +46,13 @@
     "play": {
       "nickname": "V-jer-an"
     }
+  },
+  {
+    "match": {
+      "author": "pikachu@sentry.io"
+    },
+    "play": {
+      "nickname": "Pikachu"
+    }
   }
 ]
