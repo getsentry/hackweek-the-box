@@ -34,8 +34,8 @@
     "typescript": "^5.1.6"
   },
   "dependencies": {
-    "@sentry/node": "^7.74.0",
-    "@sentry/profiling-node": "^1.2.1",
+    "@sentry/node": "^8.13.0",
+    "@sentry/profiling-node": "^8.13.0",
     "@types/rpi-gpio": "^2.1.1",
     "axios": "^1.4.0",
     "commander": "^11.0.0",

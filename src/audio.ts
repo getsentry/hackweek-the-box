@@ -1,6 +1,6 @@
-import shell from "shelljs";
+import { exec } from "./utils.js";
 import { getAssetPath } from "./file.js";
-import { CommitType } from "./types.js";
+import type { CommitType } from "./types.js";
 
 export enum Sound {
   WOOF = "WOOF",
@@ -52,6 +52,7 @@ export enum Voice {
 }
 
 export async function playSound(sound: Sound) {
+  console.log("Playing sound", sound);
   return playFile(getAssetPath(SoundFileMap[sound]));
 }
 
@@ -59,9 +60,9 @@ export async function playFile(file: string) {
   const system = process.platform;
 
   if (system === "darwin") {
-    shell.exec(`afplay ${file}`);
+    exec(`afplay ${file}`);
   } else if (system === "linux") {
-    shell.exec(`DISPLAY=:0 mpg123 ${file}`);
+    exec(`DISPLAY=:0 mpg123 ${file}`);
   } else {
     throw new Error(`Unsupported platform: ${system}`);
   }

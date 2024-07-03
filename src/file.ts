@@ -5,7 +5,10 @@ import { fileURLToPath } from "node:url";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
-const ASSET_BASE_PATH = join(__dirname, "..", "assets");
+const getAssetBasePath = () => {
+  // symlinked
+  return join("~", "box-assets");
+};
 
 export function readFile(path: string) {
   return fs.readFile(join(__dirname, path), "utf-8");
@@ -20,7 +23,7 @@ export function readAsset(file: string) {
 }
 
 export function getAssetPath(file: string) {
-  return join(ASSET_BASE_PATH, file);
+  return join(getAssetBasePath(), file);
 }
 
 export function getTempPath(file: string = new Date().getTime().toString()) {

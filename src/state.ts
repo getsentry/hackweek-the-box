@@ -1,6 +1,6 @@
 import db from "./db.js";
 import { readFile, writeFile } from "./file.js";
-import { Commit, Release, Rule } from "./types.js";
+import type { Commit, Release, Rule } from "./types.js";
 
 const RULES_FILENAME = "../.rules.json";
 
