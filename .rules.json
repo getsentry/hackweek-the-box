@@ -30,5 +30,21 @@
     "play": {
       "nickname": "Simon"
     }
+  },
+  {
+    "match": {
+      "author": "priscila.oliveira@sentry.io"
+    },
+    "play": {
+      "nickname": "Pree"
+    }
+  },
+  {
+    "match": {
+      "author": "vjeran.grozdanic@sentry.io"
+    },
+    "play": {
+      "nickname": "V-jer-an"
+    }
   }
 ]
