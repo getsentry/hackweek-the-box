@@ -49,6 +49,14 @@
   },
   {
     "match": {
+      "author": "fabian.schindler.strauss@gmail.com"
+    },
+    "play": {
+      "nickname": "Fabian"
+    }
+  },
+  {
+    "match": {
       "author": "pikachu@sentry.io"
     },
     "play": {
