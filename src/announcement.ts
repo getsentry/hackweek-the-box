@@ -8,7 +8,7 @@ import { isLocked, lock, unlock } from "./lock.js";
 import * as Sentry from "@sentry/node";
 
 export async function announce(config: AnnouncementConfig) {
-  return Sentry.startSpan({ name: "announce", op: "function"}, async () => {
+  return Sentry.startSpan({ name: "announce", op: "function" }, async () => {
     if (isLocked()) {
       console.log("Box is locked, cannot announce");
       return;
@@ -22,7 +22,7 @@ export async function announce(config: AnnouncementConfig) {
     }
 
     if (config.light) {
-      await lightOn();
+      lightOn();
     }
 
     if (config.sound) {
@@ -34,7 +34,7 @@ export async function announce(config: AnnouncementConfig) {
     }
 
     if (config.light) {
-      await lightOff();
+      lightOff();
     }
     unlock();
   });

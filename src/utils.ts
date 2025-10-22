@@ -9,7 +9,11 @@ export const sleep = (miliseconds: number) =>
 
 export const runEvery = (seconds: number, fn: () => Promise<void>) => {
   const wrappedFn = async () => {
-    await fn();
+    try {
+      await fn();
+    } catch (error) {
+      console.error("Error in scheduled task:", error);
+    }
     setTimeout(wrappedFn, seconds * 1000);
   };
 
@@ -63,18 +67,6 @@ export function normalizeString(parameter: unknown): string {
 }
 
 export const exec = (cmd: string) => shelljs.exec(cmd);
-
-export function sendMetric(name: string, value: number) {
-  return Sentry.startSpan({ name }, (span) => {
-    span.setAttribute("value", value);
-  });
-}
-
-export function sendMetrics(metrics: Record<string, number>) {
-  return Sentry.startSpan({ name: "sendMetrics" }, (span) => {
-    span.setAttributes(metrics);
-  });
-}
 
 export const getCurrentVersion = () => {
   try {

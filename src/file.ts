@@ -2,12 +2,20 @@ import { promises as fs } from "node:fs";
 import { join, dirname } from "node:path";
 import { tmpdir } from "node:os";
 import { fileURLToPath } from "node:url";
+import { existsSync } from "fs";
+import { homedir } from "os";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
 const getAssetBasePath = () => {
-  // symlinked
-  return join("~", "box-assets");
+  // Check for symlinked path first (production)
+  const symlinkedPath = join(homedir(), "box-assets");
+  if (existsSync(symlinkedPath)) {
+    return symlinkedPath;
+  }
+
+  // Fall back to local assets directory (development)
+  return join(__dirname, "..", "assets");
 };
 
 export function readFile(path: string) {

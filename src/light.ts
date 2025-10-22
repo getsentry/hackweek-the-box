@@ -1,32 +1,53 @@
 import { exec } from "./utils.js";
+import { existsSync } from "fs";
 
 const LIGHT_PIN = 20;
+const GPIO_BIN = "/home/ubuntu/raspi-gpio/raspi-gpio";
 
-export async function initLight() {
+let gpioAvailable: boolean | null = null;
+
+function checkGpioAvailable(): boolean {
+  if (gpioAvailable === null) {
+    gpioAvailable = existsSync(GPIO_BIN);
+    if (!gpioAvailable) {
+      console.log("GPIO binary not found - light control disabled");
+    }
+  }
+  return gpioAvailable;
+}
+
+export function initLight() {
+  if (!checkGpioAvailable()) return;
+
+  console.log("Initializing light beacon");
   try {
-    exec(`/home/ubuntu/raspi-gpio/raspi-gpio set ${LIGHT_PIN} op`);
-    exec(`/home/ubuntu/raspi-gpio/raspi-gpio set ${LIGHT_PIN} dh`);
-    console.log("Initializing light beacon");
+    exec(`${GPIO_BIN} set ${LIGHT_PIN} op`);
+    exec(`${GPIO_BIN} set ${LIGHT_PIN} dh`);
+    console.log("Light beacon initialized");
   } catch (e) {
     console.error(e);
     console.log("Error while initializing light pin");
   }
 }
 
-export async function lightOn() {
+export function lightOn() {
+  if (!checkGpioAvailable()) return;
+
   try {
     console.log("Turning light on");
-    exec(`/home/ubuntu/raspi-gpio/raspi-gpio set ${LIGHT_PIN} dl`);
+    exec(`${GPIO_BIN} set ${LIGHT_PIN} dl`);
   } catch (e) {
     console.error(e);
     console.log("Error while turning on light pin");
   }
 }
 
-export async function lightOff() {
+export function lightOff() {
+  if (!checkGpioAvailable()) return;
+
   try {
     console.log("Turning light off");
-    exec(`/home/ubuntu/raspi-gpio/raspi-gpio set ${LIGHT_PIN} dh`);
+    exec(`${GPIO_BIN} set ${LIGHT_PIN} dh`);
   } catch (e) {
     console.error(e);
     console.log("Error while turning off light pin");

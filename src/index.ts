@@ -6,12 +6,14 @@ import { getNewCommits } from "./fetch.js";
 import { initLight } from "./light.js";
 import { getPRScopes } from "./pr.js";
 import { initState, state } from "./state.js";
+import { startServer } from "./server.js";
 import type { Commit, Rule } from "./types.js";
 import { parseCommit, runEvery, sleep, getCurrentVersion } from "./utils.js";
 
 config();
 
 export const main = async () => {
+  console.log("Initializing Sentry...");
   Sentry.init({
     dsn: process.env.SENTRY_DSN,
     tracesSampleRate: 1.0,
@@ -19,10 +21,20 @@ export const main = async () => {
     release: "the-box@" + getCurrentVersion(),
     environment: process.env.NODE_ENV,
   });
-  initLight();
+
+  // Initialize light in background (non-blocking)
+  setImmediate(() => initLight());
+
   await initState();
 
-  runEvery(60, checkForNewCommits);
+  // Start web server
+  startServer();
+
+  // Start commit checking in background (non-blocking)
+  setImmediate(() => {
+    console.log("Starting commit check background task...");
+    runEvery(60, checkForNewCommits);
+  });
 };
 
 export async function checkForNewCommits() {
@@ -106,14 +118,6 @@ async function checkReleaseScope(commit: Commit) {
     }
   );
 }
-
-// // with the new deployment logic, every commit that is deployed to backend twice
-// // should be announced
-// async function checkReleaseScope(commit: Commit) {
-//   const releases = commit.releases;
-//   console.log(releases);
-//   return releases.filter((r) => r === "backend").length >= 2;
-// }
 
 async function checkIfAlreadyAnnounced(commit: Commit) {
   return Sentry.startSpan(

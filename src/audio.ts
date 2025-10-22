@@ -1,6 +1,7 @@
 import { exec } from "./utils.js";
 import { getAssetPath } from "./file.js";
 import type { CommitType } from "./types.js";
+import { existsSync } from "fs";
 
 export enum Sound {
   WOOF = "WOOF",
@@ -57,14 +58,24 @@ export async function playSound(sound: Sound) {
 }
 
 export async function playFile(file: string) {
+  // Check if file exists
+  if (!existsSync(file)) {
+    console.error(`Audio file not found: ${file}`);
+    return;
+  }
+
   const system = process.platform;
 
-  if (system === "darwin") {
-    exec(`afplay ${file}`);
-  } else if (system === "linux") {
-    exec(`DISPLAY=:0 mpg123 ${file}`);
-  } else {
-    throw new Error(`Unsupported platform: ${system}`);
+  try {
+    if (system === "darwin") {
+      exec(`afplay "${file}"`);
+    } else if (system === "linux") {
+      exec(`DISPLAY=:0 mpg123 "${file}"`);
+    } else {
+      console.error(`Unsupported platform: ${system}`);
+    }
+  } catch (error) {
+    console.error(`Error playing audio file ${file}:`, error);
   }
 }
 

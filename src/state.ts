@@ -5,6 +5,7 @@ import type { Commit, Release, Rule } from "./types.js";
 const RULES_FILENAME = "../.rules.json";
 
 export async function initState(): Promise<void> {
+  console.log("Initializing state");
   try {
     if (process.env.NODE_ENV === "dev") {
       await wipe();
