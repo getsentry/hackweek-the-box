@@ -42,6 +42,13 @@
           >
             Rules
           </button>
+          <button
+            @click="activeTab = 'soundboard'"
+            :class="activeTab === 'soundboard' ? 'border-blue-500 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700'"
+            class="py-4 px-1 border-b-2 font-medium text-sm"
+          >
+            Soundboard
+          </button>
         </nav>
       </div>
 
@@ -308,6 +315,50 @@
           </div>
         </div>
       </div>
+
+      <!-- Soundboard Tab -->
+      <div x-show="activeTab === 'soundboard'" class="space-y-6">
+        <div class="bg-white rounded-lg shadow p-6">
+          <h2 class="text-xl font-semibold text-gray-800 mb-6">Soundboard</h2>
+
+          <!-- 3x3 Grid of Sound Buttons -->
+          <div class="grid grid-cols-3 gap-3 max-w-md mx-auto">
+            <template x-for="sound in soundboardSounds" :key="sound.id">
+              <button
+                @click="playSoundboardSound(sound.id)"
+                :disabled="!sound.available || playingSound === sound.id"
+                :class="{
+                  'bg-gray-400': playingSound === sound.id,
+                  'bg-gradient-to-br from-gray-500 to-gray-700 hover:from-gray-400 hover:to-gray-600': sound.available && playingSound !== sound.id,
+                  'bg-gradient-to-br from-gray-200 to-gray-300 cursor-not-allowed opacity-50': !sound.available,
+                  'hover:scale-105': sound.available,
+                  'scale-100': !sound.available
+                }"
+                class="aspect-square rounded-lg text-white font-medium shadow-md transition-all transform active:scale-95 flex flex-col items-center justify-center p-3"
+              >
+                <span class="text-2xl mb-1" x-text="sound.emoji"></span>
+                <span class="text-xs" x-text="sound.name"></span>
+                <span x-show="playingSound === sound.id" class="text-xs mt-0.5"
+                  >Playing...</span
+                >
+                <span
+                  x-show="!sound.available"
+                  class="text-xs mt-0.5 opacity-70"
+                  >Coming soon</span
+                >
+              </button>
+            </template>
+          </div>
+
+          <!-- Status Message -->
+          <div
+            x-show="soundboardStatus"
+            :class="soundboardError ? 'bg-red-50 text-red-700' : 'bg-green-50 text-green-700'"
+            class="mt-4 p-4 rounded-lg text-sm"
+            x-text="soundboardStatus"
+          ></div>
+        </div>
+      </div>
     </div>
 
     <script>
@@ -318,11 +369,35 @@
           rules: [],
           testMessage: "Hello from The Box!",
           selectedVoice: "en_us_001",
-          selectedSound: "SHIP",
+          selectedSound: "",
           testLight: true,
           testing: false,
           testStatus: "",
           testError: false,
+          playingSound: null,
+          soundboardStatus: "",
+          soundboardError: false,
+          soundboardSounds: [
+            {
+              id: "ah_shit",
+              name: "Ah Shit here we go again",
+              emoji: "💩",
+              available: true,
+            },
+            {
+              id: "damn_train",
+              name: "All we had to do is follow the damn train CJ!",
+              emoji: "🚂",
+              available: true,
+            },
+            { id: "ship", name: "Ship Horn", emoji: "🚢", available: true },
+            { id: "nice", name: "Noice!", emoji: "😎", available: true },
+            { id: "riccardo", name: "Riccardo", emoji: "🎭", available: true },
+            { id: "drumroll", name: "Drum Roll", emoji: "🥁", available: true },
+            { id: "airhorn", name: "Air Horn", emoji: "📢", available: false },
+            { id: "applause", name: "Applause", emoji: "👏", available: false },
+            { id: "crickets", name: "Crickets", emoji: "🦗", available: false },
+          ],
 
           async init() {
             await this.loadCommits();
@@ -398,6 +473,38 @@
               }
             } catch (error) {
               alert(`Error: ${error.message}`);
+            }
+          },
+
+          async playSoundboardSound(soundId) {
+            this.playingSound = soundId;
+            this.soundboardStatus = "";
+            this.soundboardError = false;
+
+            try {
+              const response = await fetch(`/api/soundboard/${soundId}`, {
+                method: "POST",
+              });
+
+              if (response.ok) {
+                this.soundboardStatus = "✓ Sound played!";
+                this.soundboardError = false;
+              } else {
+                const error = await response.json();
+                this.soundboardStatus = `Error: ${
+                  error.message || "Failed to play sound"
+                }`;
+                this.soundboardError = true;
+              }
+            } catch (error) {
+              this.soundboardStatus = `Error: ${error.message}`;
+              this.soundboardError = true;
+            } finally {
+              this.playingSound = null;
+              // Clear status after 2 seconds
+              setTimeout(() => {
+                this.soundboardStatus = "";
+              }, 2000);
             }
           },
 

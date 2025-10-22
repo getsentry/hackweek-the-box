@@ -120,6 +120,53 @@ app.post("/api/wednesday", async (req, res) => {
   );
 });
 
+// API: Soundboard - play custom sound
+app.post("/api/soundboard/:soundId", async (req, res) => {
+  return Sentry.startSpan(
+    { name: "api.soundboard", op: "http.server" },
+    async (span) => {
+      try {
+        const { soundId } = req.params;
+
+        span.setAttribute("soundId", soundId);
+
+        // Map soundboard IDs to actual sounds
+        const soundMap: Record<string, Sound> = {
+          nice: Sound.NOICE,
+          riccardo: Sound.RICCARDO,
+          ship: Sound.SHIP,
+          ah_shit: Sound.AH_SHIT,
+          damn_train: Sound.DAMN_TRAIN,
+          drumroll: Sound.DRUM_ROLL,
+        };
+
+        const sound = soundMap[soundId];
+
+        if (sound) {
+          // Play the actual sound
+          console.log(`Playing soundboard sound: ${soundId} -> ${sound}`);
+          await announce({ sound, light: false });
+          res.json({ success: true, sound: soundId });
+        } else {
+          // Stub for unmapped sounds
+          console.log(`Stub: soundboard sound ${soundId} (not yet mapped)`);
+          res.json({
+            success: true,
+            sound: soundId,
+            message: "Sound stub - coming soon!",
+          });
+        }
+      } catch (error) {
+        console.error("Error playing soundboard sound:", error);
+        res.status(500).json({
+          message:
+            error instanceof Error ? error.message : "Failed to play sound",
+        });
+      }
+    }
+  );
+});
+
 // API: Lunch easter egg
 app.post("/api/lunch", async (req, res) => {
   return Sentry.startSpan(

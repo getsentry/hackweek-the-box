@@ -57,6 +57,7 @@ The web interface provides:
 - **Dashboard**: View recent announcements and stats
 - **Test Sounds**: Try different voices, sounds, and messages
 - **Rules**: View configured announcement rules
+- **Soundboard**: 3x3 grid of custom sound buttons (6 wired up: Ah Shit 💩, Damn Train 🚂, Ship Horn 🚢, Noice! 😎, Riccardo 🎭, Drum Roll 🥁)
 
 Access at: http://localhost:3000
 
@@ -65,6 +66,7 @@ Access at: http://localhost:3000
 - `GET /api/commits` - Get all announced commits
 - `GET /api/rules` - Get announcement rules
 - `POST /api/test` - Test an announcement
+- `POST /api/soundboard/:soundId` - Play soundboard sound (ah_shit, damn_train, drumroll, nice, riccardo, ship mapped)
   ```json
   {
     "message": "Hello!",

@@ -152,6 +152,20 @@ app.get("/api/resource", async (req, res) => {
 - Error: `res.status(code).json({ message: "Error description" })`
 - Always wrap in Sentry spans
 
+### Dynamic Grids
+
+Use `x-for` with grid layout for button collections:
+
+```html
+<div class="grid grid-cols-3 gap-4">
+  <template x-for="item in items" :key="item.id">
+    <button @click="handleClick(item.id)">
+      <span x-text="item.name"></span>
+    </button>
+  </template>
+</div>
+```
+
 ## File Organization
 
 ```

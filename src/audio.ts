@@ -13,6 +13,9 @@ export enum Sound {
   REWIND = "REWIND",
   RICCARDO = "RICCARDO",
   WEDNESDAY = "WEDNESDAY",
+  AH_SHIT = "AH_SHIT",
+  DAMN_TRAIN = "DAMN_TRAIN",
+  DRUM_ROLL = "DRUM_ROLL",
 }
 
 export const SoundFileMap: Record<Sound, string> = {
@@ -25,6 +28,9 @@ export const SoundFileMap: Record<Sound, string> = {
   REWIND: "rewind.mp3",
   RICCARDO: "riccardo.mp3",
   WEDNESDAY: "wednesday.mp3",
+  AH_SHIT: "ah-shit.mp3",
+  DAMN_TRAIN: "damn-train.mp3",
+  DRUM_ROLL: "drum-roll.mp3",
 };
 
 export enum Voice {
