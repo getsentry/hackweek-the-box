@@ -6,6 +6,7 @@ import type { AnnouncementConfig } from "./types.js";
 import path from "path";
 import { fileURLToPath } from "url";
 import * as Sentry from "@sentry/node";
+import { requireAuth, login, logout } from "./auth.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -17,8 +18,34 @@ const PORT = process.env.PORT || 3000;
 app.use(express.json());
 app.use(express.static(path.join(__dirname, "../public")));
 
+// Auth: Login endpoint (unprotected)
+app.post("/api/login", (req, res) => {
+  const { password } = req.body;
+
+  if (!password) {
+    return res.status(400).json({ error: "Password is required" });
+  }
+
+  const token = login(password);
+
+  if (token) {
+    res.json({ token });
+  } else {
+    res.status(401).json({ error: "Invalid password" });
+  }
+});
+
+// Auth: Logout endpoint
+app.post("/api/logout", (req, res) => {
+  const token = req.headers.authorization?.replace("Bearer ", "");
+  if (token) {
+    logout(token);
+  }
+  res.json({ success: true });
+});
+
 // API: Get all commits
-app.get("/api/commits", async (req, res) => {
+app.get("/api/commits", requireAuth, async (req, res) => {
   return Sentry.startSpan(
     { name: "api.getCommits", op: "http.server" },
     async () => {
@@ -35,7 +62,7 @@ app.get("/api/commits", async (req, res) => {
 });
 
 // API: Get all rules
-app.get("/api/rules", async (req, res) => {
+app.get("/api/rules", requireAuth, async (req, res) => {
   return Sentry.startSpan(
     { name: "api.getRules", op: "http.server" },
     async () => {
@@ -51,7 +78,7 @@ app.get("/api/rules", async (req, res) => {
 });
 
 // API: Test announcement
-app.post("/api/test", async (req, res) => {
+app.post("/api/test", requireAuth, async (req, res) => {
   return Sentry.startSpan(
     { name: "api.testAnnouncement", op: "http.server" },
     async (span) => {
@@ -94,7 +121,7 @@ app.post("/api/test", async (req, res) => {
 });
 
 // API: Wednesday easter egg
-app.post("/api/wednesday", async (req, res) => {
+app.post("/api/wednesday", requireAuth, async (req, res) => {
   return Sentry.startSpan(
     { name: "api.wednesday", op: "http.server" },
     async () => {
@@ -121,7 +148,7 @@ app.post("/api/wednesday", async (req, res) => {
 });
 
 // API: Soundboard - play custom sound
-app.post("/api/soundboard/:soundId", async (req, res) => {
+app.post("/api/soundboard/:soundId", requireAuth, async (req, res) => {
   return Sentry.startSpan(
     { name: "api.soundboard", op: "http.server" },
     async (span) => {
@@ -167,8 +194,7 @@ app.post("/api/soundboard/:soundId", async (req, res) => {
   );
 });
 
-// API: Lunch easter egg
-app.post("/api/lunch", async (req, res) => {
+app.post("/api/lunch", requireAuth, async (req, res) => {
   return Sentry.startSpan(
     { name: "api.lunch", op: "http.server" },
     async () => {
@@ -178,6 +204,7 @@ app.post("/api/lunch", async (req, res) => {
           "Da Rose",
           "Mochi Ramen",
           "Koi Asian",
+          "Spoon Food",
         ];
         const fastRestaurants = [
           "Dean & David",

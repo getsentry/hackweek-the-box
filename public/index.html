@@ -10,353 +10,429 @@
     ></script>
     <script src="https://cdn.tailwindcss.com"></script>
   </head>
-  <body class="bg-gray-100 min-h-screen">
+  <body class="bg-neutral-900 min-h-screen">
     <div x-data="boxApp()" x-init="init()" class="container mx-auto px-4 py-8">
-      <!-- Header -->
-      <header class="mb-8">
-        <h1 class="text-4xl font-bold text-gray-800 mb-2">🎁 The Box</h1>
-        <p class="text-gray-600">Sentry commit announcement system</p>
-      </header>
+      <!-- Login Screen -->
+      <div x-show="!isAuthenticated" class="max-w-md mx-auto mt-20">
+        <div class="bg-neutral-900 shadow-2xl p-8 border-2 border-amber-600">
+          <h1 class="text-3xl font-bold text-amber-500 mb-2 text-center">
+            🎁 The Box
+          </h1>
+          <p class="text-neutral-400 text-center mb-6">
+            Enter password to continue
+          </p>
 
-      <!-- Tabs -->
-      <div class="mb-6 border-b border-gray-200">
-        <nav class="flex space-x-8">
-          <button
-            @click="activeTab = 'dashboard'"
-            :class="activeTab === 'dashboard' ? 'border-blue-500 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700'"
-            class="py-4 px-1 border-b-2 font-medium text-sm"
-          >
-            Dashboard
-          </button>
-          <button
-            @click="activeTab = 'test'"
-            :class="activeTab === 'test' ? 'border-blue-500 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700'"
-            class="py-4 px-1 border-b-2 font-medium text-sm"
-          >
-            Test Sounds
-          </button>
-          <button
-            @click="activeTab = 'rules'"
-            :class="activeTab === 'rules' ? 'border-blue-500 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700'"
-            class="py-4 px-1 border-b-2 font-medium text-sm"
-          >
-            Rules
-          </button>
-          <button
-            @click="activeTab = 'soundboard'"
-            :class="activeTab === 'soundboard' ? 'border-blue-500 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700'"
-            class="py-4 px-1 border-b-2 font-medium text-sm"
-          >
-            Soundboard
-          </button>
-        </nav>
+          <form @submit.prevent="handleLogin()" class="space-y-4">
+            <div>
+              <input
+                type="password"
+                x-model="password"
+                placeholder="Password"
+                class="w-full px-4 py-3 bg-neutral-800/30 border-2 border-amber-600 text-white focus:ring-2 focus:ring-amber-500 focus:border-amber-500 placeholder-neutral-400"
+                autofocus
+              />
+            </div>
+
+            <button
+              type="submit"
+              :disabled="loggingIn"
+              :class="loggingIn ? 'bg-neutral-800/30 border-neutral-600' : 'bg-amber-600 hover:bg-amber-700 border-amber-600 hover:border-amber-500'"
+              class="w-full px-6 py-3 text-white font-medium border-2 transition-all"
+            >
+              <span x-show="!loggingIn">Login</span>
+              <span x-show="loggingIn">Logging in...</span>
+            </button>
+
+            <div
+              x-show="loginError"
+              class="bg-red-900 text-red-300 p-3 text-sm border-2 border-red-700"
+              x-text="loginError"
+            ></div>
+          </form>
+        </div>
       </div>
 
-      <!-- Dashboard Tab -->
-      <div x-show="activeTab === 'dashboard'" class="space-y-6">
-        <!-- Stats -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div class="bg-white rounded-lg shadow p-6">
-            <div class="text-sm font-medium text-gray-500 mb-1">
-              Total Announcements
-            </div>
-            <div
-              class="text-3xl font-bold text-gray-800"
-              x-text="commits.length"
-            ></div>
+      <!-- Main App (shown when authenticated) -->
+      <div x-show="isAuthenticated">
+        <!-- Header -->
+        <header class="mb-8 flex justify-between items-center">
+          <div>
+            <h1 class="text-4xl font-bold text-amber-500 mb-2">🎁 The Box</h1>
+            <p class="text-neutral-400">Sentry commit announcement system</p>
           </div>
-          <div class="bg-white rounded-lg shadow p-6">
-            <div class="text-sm font-medium text-gray-500 mb-1">
-              Active Rules
-            </div>
-            <div
-              class="text-3xl font-bold text-gray-800"
-              x-text="rules.length"
-            ></div>
-          </div>
-          <div class="bg-white rounded-lg shadow p-6">
-            <div class="text-sm font-medium text-gray-500 mb-1">Status</div>
-            <div class="text-xl font-semibold text-green-600">● Running</div>
-          </div>
+          <button
+            @click="handleLogout()"
+            class="px-4 py-2 text-sm text-neutral-300 hover:text-white border-2 border-amber-600 hover:bg-neutral-800/30 hover:border-amber-500 transition-colors"
+          >
+            Logout
+          </button>
+        </header>
+
+        <!-- Tabs -->
+        <div class="mb-6 border-b-2 border-amber-600/50">
+          <nav class="flex space-x-8">
+            <button
+              @click="activeTab = 'dashboard'"
+              :class="activeTab === 'dashboard' ? 'border-amber-500 text-amber-500' : 'border-transparent text-neutral-400 hover:text-neutral-200'"
+              class="py-4 px-1 border-b-2 font-medium text-sm"
+            >
+              Dashboard
+            </button>
+            <button
+              @click="activeTab = 'test'"
+              :class="activeTab === 'test' ? 'border-amber-500 text-amber-500' : 'border-transparent text-neutral-400 hover:text-neutral-200'"
+              class="py-4 px-1 border-b-2 font-medium text-sm"
+            >
+              Test Sounds
+            </button>
+            <button
+              @click="activeTab = 'rules'"
+              :class="activeTab === 'rules' ? 'border-amber-500 text-amber-500' : 'border-transparent text-neutral-400 hover:text-neutral-200'"
+              class="py-4 px-1 border-b-2 font-medium text-sm"
+            >
+              Rules
+            </button>
+            <button
+              @click="activeTab = 'soundboard'"
+              :class="activeTab === 'soundboard' ? 'border-amber-500 text-amber-500' : 'border-transparent text-neutral-400 hover:text-neutral-200'"
+              class="py-4 px-1 border-b-2 font-medium text-sm"
+            >
+              Soundboard
+            </button>
+          </nav>
         </div>
 
-        <!-- Recent Commits -->
-        <div class="bg-white rounded-lg shadow">
-          <div class="px-6 py-4 border-b border-gray-200">
-            <h2 class="text-xl font-semibold text-gray-800">
-              Recent Announcements
-            </h2>
+        <!-- Dashboard Tab -->
+        <div x-show="activeTab === 'dashboard'" class="space-y-6">
+          <!-- Stats -->
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="bg-neutral-900 shadow-lg p-6 border-2 border-amber-600">
+              <div class="text-sm font-medium text-neutral-400 mb-1">
+                Total Announcements
+              </div>
+              <div
+                class="text-3xl font-bold text-amber-500"
+                x-text="commits.length"
+              ></div>
+            </div>
+            <div class="bg-neutral-900 shadow-lg p-6 border-2 border-amber-600">
+              <div class="text-sm font-medium text-neutral-400 mb-1">
+                Active Rules
+              </div>
+              <div
+                class="text-3xl font-bold text-amber-500"
+                x-text="rules.length"
+              ></div>
+            </div>
+            <div class="bg-neutral-900 shadow-lg p-6 border-2 border-amber-600">
+              <div class="text-sm font-medium text-neutral-400 mb-1">
+                Status
+              </div>
+              <div class="text-xl font-semibold text-green-500">● Running</div>
+            </div>
           </div>
-          <div class="divide-y divide-gray-200">
-            <template x-for="commit in commits.slice(0, 10)" :key="commit.id">
-              <div class="px-6 py-4 hover:bg-gray-50">
-                <div class="flex items-start justify-between">
-                  <div class="flex-1">
-                    <div class="flex items-center gap-2 mb-1">
-                      <span
-                        class="text-sm font-medium text-gray-800"
-                        x-text="commit.author.name"
-                      ></span>
-                      <span
-                        class="text-xs text-gray-500"
-                        x-text="formatDate(commit.dateCreated)"
-                      ></span>
+
+          <!-- Recent Commits -->
+          <div class="bg-neutral-900 shadow-lg border-2 border-amber-600">
+            <div class="px-6 py-4 border-b border-amber-600/50">
+              <h2 class="text-xl font-semibold text-amber-500">
+                Recent Announcements
+              </h2>
+            </div>
+            <div class="divide-y divide-amber-600/30">
+              <template x-for="commit in commits.slice(0, 10)" :key="commit.id">
+                <div
+                  class="px-6 py-4 hover:bg-neutral-800/30 transition-colors"
+                >
+                  <div class="flex items-start justify-between">
+                    <div class="flex-1">
+                      <div class="flex items-center gap-2 mb-1">
+                        <span
+                          class="text-sm font-medium text-neutral-200"
+                          x-text="commit.author.name"
+                        ></span>
+                        <span
+                          class="text-xs text-neutral-500"
+                          x-text="formatDate(commit.dateCreated)"
+                        ></span>
+                      </div>
+                      <p
+                        class="text-sm text-neutral-400"
+                        x-text="commit.message"
+                      ></p>
                     </div>
-                    <p
-                      class="text-sm text-gray-600"
-                      x-text="commit.message"
-                    ></p>
                   </div>
                 </div>
-              </div>
-            </template>
-            <template x-if="commits.length === 0">
-              <div class="px-6 py-8 text-center text-gray-500">
-                No announcements yet
-              </div>
-            </template>
-          </div>
-        </div>
-      </div>
-
-      <!-- Test Sounds Tab -->
-      <div x-show="activeTab === 'test'" class="space-y-6">
-        <div class="bg-white rounded-lg shadow p-6">
-          <h2 class="text-xl font-semibold text-gray-800 mb-4">
-            Test Announcement
-          </h2>
-
-          <div class="space-y-4">
-            <!-- Message Input -->
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2"
-                >Message</label
-              >
-              <input
-                type="text"
-                x-model="testMessage"
-                placeholder="Enter a test message"
-                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              />
-            </div>
-
-            <!-- Voice Select -->
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2"
-                >Voice</label
-              >
-              <select
-                x-model="selectedVoice"
-                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              >
-                <option value="en_us_001">Female US</option>
-                <option value="en_us_006">Male US 1</option>
-                <option value="en_us_007">Male US 2</option>
-                <option value="en_uk_001">Male UK</option>
-                <option value="en_au_001">Female AU</option>
-                <option value="en_us_rocket">Rocket (Character)</option>
-              </select>
-            </div>
-
-            <!-- Sound Select -->
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2"
-                >Sound</label
-              >
-              <select
-                x-model="selectedSound"
-                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              >
-                <option value="">None</option>
-                <option value="SHIP">Ship Horn (feat)</option>
-                <option value="SIGH">Sigh of Relief (fix)</option>
-                <option value="NOICE">Noice (ref)</option>
-                <option value="VACUUM">Vacuum (chore)</option>
-                <option value="TESTING">Testing 123 (test)</option>
-                <option value="REWIND">Rewind (revert)</option>
-                <option value="WOOF">Woof (unknown)</option>
-                <option value="WEDNESDAY">Wednesday</option>
-                <option value="RICCARDO">Riccardo</option>
-              </select>
-            </div>
-
-            <!-- Light Toggle -->
-            <div class="flex items-center">
-              <input
-                type="checkbox"
-                x-model="testLight"
-                id="testLight"
-                class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
-              />
-              <label
-                for="testLight"
-                class="ml-2 text-sm font-medium text-gray-700"
-              >
-                Enable Light
-              </label>
-            </div>
-
-            <!-- Test Button -->
-            <button
-              @click="testAnnouncement()"
-              :disabled="testing"
-              :class="testing ? 'bg-gray-400' : 'bg-blue-600 hover:bg-blue-700'"
-              class="w-full px-6 py-3 text-white font-medium rounded-lg transition-colors"
-            >
-              <span x-show="!testing">Test Announcement</span>
-              <span x-show="testing">Testing...</span>
-            </button>
-
-            <!-- Status Message -->
-            <div
-              x-show="testStatus"
-              :class="testError ? 'bg-red-50 text-red-700' : 'bg-green-50 text-green-700'"
-              class="p-4 rounded-lg text-sm"
-              x-text="testStatus"
-            ></div>
-          </div>
-        </div>
-
-        <!-- Quick Actions -->
-        <div class="bg-white rounded-lg shadow p-6">
-          <h3 class="text-lg font-semibold text-gray-800 mb-4">
-            Quick Actions
-          </h3>
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-            <button
-              @click="quickTest('wednesday')"
-              class="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition-colors"
-            >
-              🐫 Wednesday
-            </button>
-            <button
-              @click="quickTest('lunch')"
-              class="px-4 py-2 bg-orange-600 hover:bg-orange-700 text-white rounded-lg transition-colors"
-            >
-              🍽️ Lunch
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <!-- Rules Tab -->
-      <div x-show="activeTab === 'rules'" class="space-y-6">
-        <div class="bg-white rounded-lg shadow">
-          <div class="px-6 py-4 border-b border-gray-200">
-            <h2 class="text-xl font-semibold text-gray-800">
-              Announcement Rules
-            </h2>
-          </div>
-          <div class="p-6">
-            <template x-if="rules.length === 0">
-              <div class="text-center py-8 text-gray-500">
-                No rules configured
-              </div>
-            </template>
-            <div class="space-y-4">
-              <template x-for="(rule, index) in rules" :key="index">
-                <div class="border border-gray-200 rounded-lg p-4">
-                  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                      <h4 class="text-sm font-semibold text-gray-700 mb-2">
-                        Match Criteria
-                      </h4>
-                      <div class="text-sm text-gray-600 space-y-1">
-                        <div x-show="rule.match.author">
-                          <span class="font-medium">Author:</span>
-                          <span x-text="rule.match.author"></span>
-                        </div>
-                        <div x-show="rule.match.type">
-                          <span class="font-medium">Type:</span>
-                          <span x-text="rule.match.type"></span>
-                        </div>
-                        <div x-show="rule.match.scope">
-                          <span class="font-medium">Scope:</span>
-                          <span x-text="rule.match.scope"></span>
-                        </div>
-                        <div
-                          x-show="!rule.match.author && !rule.match.type && !rule.match.scope"
-                        >
-                          <span class="italic text-gray-400"
-                            >Matches all (wildcard)</span
-                          >
-                        </div>
-                      </div>
-                    </div>
-                    <div>
-                      <h4 class="text-sm font-semibold text-gray-700 mb-2">
-                        Play Configuration
-                      </h4>
-                      <div class="text-sm text-gray-600 space-y-1">
-                        <div x-show="rule.play.nickname">
-                          <span class="font-medium">Nickname:</span>
-                          <span x-text="rule.play.nickname"></span>
-                        </div>
-                        <div x-show="rule.play.voice">
-                          <span class="font-medium">Voice:</span>
-                          <span x-text="rule.play.voice"></span>
-                        </div>
-                        <div x-show="rule.play.sound">
-                          <span class="font-medium">Sound:</span>
-                          <span x-text="rule.play.sound"></span>
-                        </div>
-                        <div>
-                          <span class="font-medium">Light:</span>
-                          <span
-                            x-text="rule.play.light !== false ? 'Enabled' : 'Disabled'"
-                          ></span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
+              </template>
+              <template x-if="commits.length === 0">
+                <div class="px-6 py-8 text-center text-neutral-500">
+                  No announcements yet
                 </div>
               </template>
             </div>
           </div>
         </div>
-      </div>
 
-      <!-- Soundboard Tab -->
-      <div x-show="activeTab === 'soundboard'" class="space-y-6">
-        <div class="bg-white rounded-lg shadow p-6">
-          <h2 class="text-xl font-semibold text-gray-800 mb-6">Soundboard</h2>
+        <!-- Test Sounds Tab -->
+        <div x-show="activeTab === 'test'" class="space-y-6">
+          <div class="bg-neutral-900 shadow-lg p-6 border-2 border-amber-600">
+            <h2 class="text-xl font-semibold text-amber-500 mb-4">
+              Test Announcement
+            </h2>
 
-          <!-- 3x3 Grid of Sound Buttons -->
-          <div class="grid grid-cols-3 gap-3 max-w-md mx-auto">
-            <template x-for="sound in soundboardSounds" :key="sound.id">
+            <div class="space-y-4">
+              <!-- Message Input -->
+              <div>
+                <label class="block text-sm font-medium text-neutral-300 mb-2"
+                  >Message</label
+                >
+                <input
+                  type="text"
+                  x-model="testMessage"
+                  placeholder="Enter a test message"
+                  class="w-full px-4 py-2 bg-neutral-800/30 border-2 border-amber-600 text-white focus:ring-2 focus:ring-amber-500 focus:border-amber-500 placeholder-neutral-400"
+                />
+              </div>
+
+              <!-- Voice Select -->
+              <div>
+                <label class="block text-sm font-medium text-neutral-300 mb-2"
+                  >Voice</label
+                >
+                <select
+                  x-model="selectedVoice"
+                  class="w-full px-4 py-2 bg-neutral-800/30 border-2 border-amber-600 text-white focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+                >
+                  <option value="en_us_001">Female US</option>
+                  <option value="en_us_006">Male US 1</option>
+                  <option value="en_us_007">Male US 2</option>
+                  <option value="en_uk_001">Male UK</option>
+                  <option value="en_au_001">Female AU</option>
+                  <option value="en_us_rocket">Rocket (Character)</option>
+                </select>
+              </div>
+
+              <!-- Sound Select -->
+              <div>
+                <label class="block text-sm font-medium text-neutral-300 mb-2"
+                  >Sound</label
+                >
+                <select
+                  x-model="selectedSound"
+                  class="w-full px-4 py-2 bg-neutral-800/30 border-2 border-amber-600 text-white focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+                >
+                  <option value="">None</option>
+                  <option value="SHIP">Ship Horn (feat)</option>
+                  <option value="SIGH">Sigh of Relief (fix)</option>
+                  <option value="NOICE">Noice (ref)</option>
+                  <option value="VACUUM">Vacuum (chore)</option>
+                  <option value="TESTING">Testing 123 (test)</option>
+                  <option value="REWIND">Rewind (revert)</option>
+                  <option value="WOOF">Woof (unknown)</option>
+                  <option value="WEDNESDAY">Wednesday</option>
+                  <option value="RICCARDO">Riccardo</option>
+                </select>
+              </div>
+
+              <!-- Light Toggle -->
+              <div class="flex items-center">
+                <input
+                  type="checkbox"
+                  x-model="testLight"
+                  id="testLight"
+                  class="w-4 h-4 text-amber-600 border-amber-600 bg-neutral-800/30 focus:ring-amber-500"
+                />
+                <label
+                  for="testLight"
+                  class="ml-2 text-sm font-medium text-neutral-300"
+                >
+                  Enable Light
+                </label>
+              </div>
+
+              <!-- Test Button -->
               <button
-                @click="playSoundboardSound(sound.id)"
-                :disabled="!sound.available || playingSound === sound.id"
-                :class="{
-                  'bg-gray-400': playingSound === sound.id,
-                  'bg-gradient-to-br from-gray-500 to-gray-700 hover:from-gray-400 hover:to-gray-600': sound.available && playingSound !== sound.id,
-                  'bg-gradient-to-br from-gray-200 to-gray-300 cursor-not-allowed opacity-50': !sound.available,
-                  'hover:scale-105': sound.available,
-                  'scale-100': !sound.available
-                }"
-                class="aspect-square rounded-lg text-white font-medium shadow-md transition-all transform active:scale-95 flex flex-col items-center justify-center p-3"
+                @click="testAnnouncement()"
+                :disabled="testing"
+                :class="testing ? 'bg-neutral-800/30 border-neutral-600' : 'bg-amber-600 hover:bg-amber-700 border-amber-600 hover:border-amber-500'"
+                class="w-full px-6 py-3 text-white font-medium border-2 transition-all"
               >
-                <span class="text-2xl mb-1" x-text="sound.emoji"></span>
-                <span class="text-xs" x-text="sound.name"></span>
-                <span x-show="playingSound === sound.id" class="text-xs mt-0.5"
-                  >Playing...</span
-                >
-                <span
-                  x-show="!sound.available"
-                  class="text-xs mt-0.5 opacity-70"
-                  >Coming soon</span
-                >
+                <span x-show="!testing">Test Announcement</span>
+                <span x-show="testing">Testing...</span>
               </button>
-            </template>
+
+              <!-- Status Message -->
+              <div
+                x-show="testStatus"
+                :class="testError ? 'bg-red-900 border-red-700 text-red-300' : 'bg-green-900 border-green-700 text-green-300'"
+                class="p-4 text-sm border-2"
+                x-text="testStatus"
+              ></div>
+            </div>
           </div>
 
-          <!-- Status Message -->
-          <div
-            x-show="soundboardStatus"
-            :class="soundboardError ? 'bg-red-50 text-red-700' : 'bg-green-50 text-green-700'"
-            class="mt-4 p-4 rounded-lg text-sm"
-            x-text="soundboardStatus"
-          ></div>
+          <!-- Quick Actions -->
+          <div class="bg-neutral-900 shadow-lg p-6 border-2 border-amber-600">
+            <h3 class="text-lg font-semibold text-amber-500 mb-4">
+              Quick Actions
+            </h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <button
+                @click="quickTest('wednesday')"
+                class="px-4 py-2 bg-lime-600 hover:bg-lime-700 text-white border-2 border-lime-500 hover:border-lime-400 transition-all"
+              >
+                🗓️ Wednesday
+              </button>
+              <button
+                @click="quickTest('lunch')"
+                class="px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white border-2 border-amber-500 hover:border-amber-400 transition-all"
+              >
+                🍽️ Lunch
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Rules Tab -->
+        <div x-show="activeTab === 'rules'" class="space-y-6">
+          <div class="bg-neutral-900 shadow-lg border-2 border-amber-600">
+            <div class="px-6 py-4 border-b border-amber-600/50">
+              <h2 class="text-xl font-semibold text-amber-500">
+                Announcement Rules
+              </h2>
+            </div>
+            <div class="p-6">
+              <template x-if="rules.length === 0">
+                <div class="text-center py-8 text-neutral-500">
+                  No rules configured
+                </div>
+              </template>
+              <div class="space-y-4">
+                <template x-for="(rule, index) in rules" :key="index">
+                  <div
+                    class="border-2 border-amber-600/50 p-4 bg-neutral-800/30"
+                  >
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <h4 class="text-sm font-semibold text-amber-400 mb-2">
+                          Match Criteria
+                        </h4>
+                        <div class="text-sm text-neutral-400 space-y-1">
+                          <div x-show="rule.match.author">
+                            <span class="font-medium text-neutral-300"
+                              >Author:</span
+                            >
+                            <span x-text="rule.match.author"></span>
+                          </div>
+                          <div x-show="rule.match.type">
+                            <span class="font-medium text-neutral-300"
+                              >Type:</span
+                            >
+                            <span x-text="rule.match.type"></span>
+                          </div>
+                          <div x-show="rule.match.scope">
+                            <span class="font-medium text-neutral-300"
+                              >Scope:</span
+                            >
+                            <span x-text="rule.match.scope"></span>
+                          </div>
+                          <div
+                            x-show="!rule.match.author && !rule.match.type && !rule.match.scope"
+                          >
+                            <span class="italic text-neutral-500"
+                              >Matches all (wildcard)</span
+                            >
+                          </div>
+                        </div>
+                      </div>
+                      <div>
+                        <h4 class="text-sm font-semibold text-amber-400 mb-2">
+                          Play Configuration
+                        </h4>
+                        <div class="text-sm text-neutral-400 space-y-1">
+                          <div x-show="rule.play.nickname">
+                            <span class="font-medium text-neutral-300"
+                              >Nickname:</span
+                            >
+                            <span x-text="rule.play.nickname"></span>
+                          </div>
+                          <div x-show="rule.play.voice">
+                            <span class="font-medium text-neutral-300"
+                              >Voice:</span
+                            >
+                            <span x-text="rule.play.voice"></span>
+                          </div>
+                          <div x-show="rule.play.sound">
+                            <span class="font-medium text-neutral-300"
+                              >Sound:</span
+                            >
+                            <span x-text="rule.play.sound"></span>
+                          </div>
+                          <div>
+                            <span class="font-medium text-neutral-300"
+                              >Light:</span
+                            >
+                            <span
+                              x-text="rule.play.light !== false ? 'Enabled' : 'Disabled'"
+                            ></span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </template>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Soundboard Tab -->
+        <div x-show="activeTab === 'soundboard'" class="space-y-6">
+          <div class="bg-neutral-900 shadow-lg p-6 border-2 border-amber-600">
+            <h2 class="text-xl font-semibold text-amber-500 mb-6">
+              Soundboard
+            </h2>
+
+            <!-- 3x3 Grid of Sound Buttons -->
+            <div class="grid grid-cols-3 gap-3 max-w-md mx-auto">
+              <template x-for="sound in soundboardSounds" :key="sound.id">
+                <button
+                  @click="playSoundboardSound(sound.id)"
+                  :disabled="!sound.available || playingSound === sound.id"
+                  :class="{
+                  'bg-neutral-800/30 border-amber-500 shadow-2xl shadow-amber-500/70': playingSound === sound.id,
+                  'bg-neutral-900 border-amber-600 hover:bg-neutral-800/30 hover:border-amber-500 hover:shadow-2xl hover:shadow-amber-600/50 hover:scale-105': sound.available && playingSound !== sound.id,
+                  'bg-neutral-900 border-neutral-700 cursor-not-allowed opacity-40': !sound.available,
+                }"
+                  class="aspect-square border-2 text-white font-medium shadow-xl transition-all transform active:scale-95 flex flex-col items-center justify-center p-3"
+                >
+                  <span class="text-2xl mb-1" x-text="sound.emoji"></span>
+                  <span
+                    class="text-xs text-neutral-300"
+                    x-text="sound.name"
+                  ></span>
+                  <span
+                    x-show="playingSound === sound.id"
+                    class="text-xs mt-0.5 text-amber-400"
+                    >Playing...</span
+                  >
+                  <span
+                    x-show="!sound.available"
+                    class="text-xs mt-0.5 text-neutral-500"
+                    >Coming soon</span
+                  >
+                </button>
+              </template>
+            </div>
+
+            <!-- Status Message -->
+            <div
+              x-show="soundboardStatus"
+              :class="soundboardError ? 'bg-red-900 border-red-700 text-red-300' : 'bg-green-900 border-green-700 text-green-300'"
+              class="mt-4 p-4 text-sm border-2"
+              x-text="soundboardStatus"
+            ></div>
+          </div>
         </div>
       </div>
     </div>
@@ -364,6 +440,12 @@
     <script>
       function boxApp() {
         return {
+          // Auth state
+          isAuthenticated: false,
+          password: "",
+          loggingIn: false,
+          loginError: "",
+
           activeTab: "dashboard",
           commits: [],
           rules: [],
@@ -400,15 +482,70 @@
           ],
 
           async init() {
-            await this.loadCommits();
-            await this.loadRules();
+            // Check if already authenticated
+            const token = localStorage.getItem("boxToken");
+            if (token) {
+              this.isAuthenticated = true;
+              await this.loadCommits();
+              await this.loadRules();
+            }
+          },
+
+          async handleLogin() {
+            this.loggingIn = true;
+            this.loginError = "";
+
+            try {
+              const response = await fetch("/api/login", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ password: this.password }),
+              });
+
+              if (response.ok) {
+                const data = await response.json();
+                localStorage.setItem("boxToken", data.token);
+                this.isAuthenticated = true;
+                this.password = "";
+                await this.loadCommits();
+                await this.loadRules();
+              } else {
+                const error = await response.json();
+                this.loginError = error.error || "Invalid password";
+              }
+            } catch (error) {
+              this.loginError = "Connection error";
+            } finally {
+              this.loggingIn = false;
+            }
+          },
+
+          async handleLogout() {
+            const token = localStorage.getItem("boxToken");
+            if (token) {
+              await fetch("/api/logout", {
+                method: "POST",
+                headers: { Authorization: `Bearer ${token}` },
+              });
+            }
+            localStorage.removeItem("boxToken");
+            this.isAuthenticated = false;
+          },
+
+          getAuthHeaders() {
+            const token = localStorage.getItem("boxToken");
+            return token ? { Authorization: `Bearer ${token}` } : {};
           },
 
           async loadCommits() {
             try {
-              const response = await fetch("/api/commits");
+              const response = await fetch("/api/commits", {
+                headers: this.getAuthHeaders(),
+              });
               if (response.ok) {
                 this.commits = await response.json();
+              } else if (response.status === 401) {
+                this.handleLogout();
               }
             } catch (error) {
               console.error("Failed to load commits:", error);
@@ -417,9 +554,13 @@
 
           async loadRules() {
             try {
-              const response = await fetch("/api/rules");
+              const response = await fetch("/api/rules", {
+                headers: this.getAuthHeaders(),
+              });
               if (response.ok) {
                 this.rules = await response.json();
+              } else if (response.status === 401) {
+                this.handleLogout();
               }
             } catch (error) {
               console.error("Failed to load rules:", error);
@@ -434,7 +575,10 @@
             try {
               const response = await fetch("/api/test", {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
+                headers: {
+                  "Content-Type": "application/json",
+                  ...this.getAuthHeaders(),
+                },
                 body: JSON.stringify({
                   message: this.testMessage,
                   voice: this.selectedVoice,
@@ -446,6 +590,8 @@
               if (response.ok) {
                 this.testStatus = "✓ Announcement played successfully!";
                 this.testError = false;
+              } else if (response.status === 401) {
+                this.handleLogout();
               } else {
                 const error = await response.json();
                 this.testStatus = `Error: ${
@@ -465,9 +611,12 @@
             try {
               const response = await fetch(`/api/${action}`, {
                 method: "POST",
+                headers: this.getAuthHeaders(),
               });
 
-              if (!response.ok) {
+              if (response.status === 401) {
+                this.handleLogout();
+              } else if (!response.ok) {
                 const error = await response.json();
                 alert(`Error: ${error.message}`);
               }
@@ -484,11 +633,14 @@
             try {
               const response = await fetch(`/api/soundboard/${soundId}`, {
                 method: "POST",
+                headers: this.getAuthHeaders(),
               });
 
               if (response.ok) {
                 this.soundboardStatus = "✓ Sound played!";
                 this.soundboardError = false;
+              } else if (response.status === 401) {
+                this.handleLogout();
               } else {
                 const error = await response.json();
                 this.soundboardStatus = `Error: ${
