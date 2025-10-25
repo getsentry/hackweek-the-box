@@ -42,7 +42,6 @@ export async function announce(config: AnnouncementConfig) {
 
 async function generateMp3(message: string, voice: string) {
   const dir = getTempPath();
-  console.log("Generating MP3 for", message, "in", dir);
   await textToSpeechIt(voice, message, dir, dir);
 
   return join(dir, `audio-0.mp3`);

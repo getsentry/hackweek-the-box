@@ -83,14 +83,7 @@
               :class="activeTab === 'test' ? 'border-amber-500 text-amber-500' : 'border-transparent text-neutral-400 hover:text-neutral-200'"
               class="py-4 px-1 border-b-2 font-medium text-sm"
             >
-              Test Sounds
-            </button>
-            <button
-              @click="activeTab = 'rules'"
-              :class="activeTab === 'rules' ? 'border-amber-500 text-amber-500' : 'border-transparent text-neutral-400 hover:text-neutral-200'"
-              class="py-4 px-1 border-b-2 font-medium text-sm"
-            >
-              Rules
+              Testing
             </button>
             <button
               @click="activeTab = 'soundboard'"
@@ -98,6 +91,13 @@
               class="py-4 px-1 border-b-2 font-medium text-sm"
             >
               Soundboard
+            </button>
+            <button
+              @click="activeTab = 'rules'"
+              :class="activeTab === 'rules' ? 'border-amber-500 text-amber-500' : 'border-transparent text-neutral-400 hover:text-neutral-200'"
+              class="py-4 px-1 border-b-2 font-medium text-sm"
+            >
+              Rules
             </button>
           </nav>
         </div>
@@ -271,24 +271,37 @@
             </div>
           </div>
 
-          <!-- Quick Actions -->
+          <!-- Light Control -->
           <div class="bg-neutral-900 shadow-lg p-6 border-2 border-amber-600">
             <h3 class="text-lg font-semibold text-amber-500 mb-4">
-              Quick Actions
+              Light Control
             </h3>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-              <button
-                @click="quickTest('wednesday')"
-                class="px-4 py-2 bg-lime-600 hover:bg-lime-700 text-white border-2 border-lime-500 hover:border-lime-400 transition-all"
-              >
-                🗓️ Wednesday
-              </button>
-              <button
-                @click="quickTest('lunch')"
-                class="px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white border-2 border-amber-500 hover:border-amber-400 transition-all"
-              >
-                🍽️ Lunch
-              </button>
+            <div class="space-y-3">
+              <div class="text-sm text-neutral-300">
+                Status:
+                <span
+                  :class="lightStatus === 'on' ? 'text-green-500' : 'text-neutral-500'"
+                  x-text="lightStatus === 'on' ? '● ON' : '○ OFF'"
+                ></span>
+              </div>
+              <div class="grid grid-cols-2 gap-3">
+                <button
+                  @click="toggleLight('on')"
+                  :disabled="lightStatus === 'on'"
+                  :class="lightStatus === 'on' ? 'bg-green-600 border-green-500 opacity-75' : 'bg-green-600 hover:bg-green-700 border-green-500 hover:border-green-400'"
+                  class="px-4 py-2 text-white border-2 transition-all"
+                >
+                  💡 Turn On
+                </button>
+                <button
+                  @click="toggleLight('off')"
+                  :disabled="lightStatus === 'off'"
+                  :class="lightStatus === 'off' ? 'bg-red-600 border-red-500 opacity-75' : 'bg-red-600 hover:bg-red-700 border-red-500 hover:border-red-400'"
+                  class="px-4 py-2 text-white border-2 transition-all"
+                >
+                  🔌 Turn Off
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -393,36 +406,62 @@
               Soundboard
             </h2>
 
-            <!-- 3x3 Grid of Sound Buttons -->
-            <div class="grid grid-cols-3 gap-3 max-w-md mx-auto">
-              <template x-for="sound in soundboardSounds" :key="sound.id">
+            <!-- Quick Easter Eggs -->
+            <div class="mb-6">
+              <h3 class="text-sm font-semibold text-amber-400 mb-3">
+                The Classics
+              </h3>
+              <div class="grid grid-cols-2 gap-3 max-w-md mx-auto">
                 <button
-                  @click="playSoundboardSound(sound.id)"
-                  :disabled="!sound.available || playingSound === sound.id"
-                  :class="{
-                  'bg-neutral-800/30 border-amber-500 shadow-2xl shadow-amber-500/70': playingSound === sound.id,
-                  'bg-neutral-900 border-amber-600 hover:bg-neutral-800/30 hover:border-amber-500 hover:shadow-2xl hover:shadow-amber-600/50 hover:scale-105': sound.available && playingSound !== sound.id,
-                  'bg-neutral-900 border-neutral-700 cursor-not-allowed opacity-40': !sound.available,
-                }"
-                  class="aspect-square border-2 text-white font-medium shadow-xl transition-all transform active:scale-95 flex flex-col items-center justify-center p-3"
+                  @click="quickTest('wednesday')"
+                  class="px-4 py-3 bg-lime-600 hover:bg-lime-700 text-white border-2 border-lime-500 hover:border-lime-400 transition-all hover:shadow-xl hover:shadow-lime-600/30"
                 >
-                  <span class="text-2xl mb-1" x-text="sound.emoji"></span>
-                  <span
-                    class="text-xs text-neutral-300"
-                    x-text="sound.name"
-                  ></span>
-                  <span
-                    x-show="playingSound === sound.id"
-                    class="text-xs mt-0.5 text-amber-400"
-                    >Playing...</span
-                  >
-                  <span
-                    x-show="!sound.available"
-                    class="text-xs mt-0.5 text-neutral-500"
-                    >Coming soon</span
-                  >
+                  🗓️ Wednesday
                 </button>
-              </template>
+                <button
+                  @click="quickTest('lunch')"
+                  class="px-4 py-3 bg-amber-600 hover:bg-amber-700 text-white border-2 border-amber-500 hover:border-amber-400 transition-all hover:shadow-xl hover:shadow-amber-600/30"
+                >
+                  🍽️ Lunch
+                </button>
+              </div>
+            </div>
+
+            <!-- Sound Effects -->
+            <div>
+              <h3 class="text-sm font-semibold text-amber-400 mb-3">
+                Sound Effects
+              </h3>
+              <div class="grid grid-cols-3 gap-3 max-w-md mx-auto">
+                <template x-for="sound in soundboardSounds" :key="sound.id">
+                  <button
+                    @click="playSoundboardSound(sound.id)"
+                    :disabled="!sound.available || playingSound === sound.id"
+                    :class="{
+                    'bg-neutral-800/30 border-amber-500 shadow-2xl shadow-amber-500/70': playingSound === sound.id,
+                    'bg-neutral-900 border-amber-600 hover:bg-neutral-800/30 hover:border-amber-500 hover:shadow-2xl hover:shadow-amber-600/50 hover:scale-105': sound.available && playingSound !== sound.id,
+                    'bg-neutral-900 border-neutral-700 cursor-not-allowed opacity-40': !sound.available,
+                  }"
+                    class="aspect-square border-2 text-white font-medium shadow-xl transition-all transform active:scale-95 flex flex-col items-center justify-center p-3"
+                  >
+                    <span class="text-2xl mb-1" x-text="sound.emoji"></span>
+                    <span
+                      class="text-xs text-neutral-300"
+                      x-text="sound.name"
+                    ></span>
+                    <span
+                      x-show="playingSound === sound.id"
+                      class="text-xs mt-0.5 text-amber-400"
+                      >Playing...</span
+                    >
+                    <span
+                      x-show="!sound.available"
+                      class="text-xs mt-0.5 text-neutral-500"
+                      >Coming soon</span
+                    >
+                  </button>
+                </template>
+              </div>
             </div>
 
             <!-- Status Message -->
@@ -456,6 +495,7 @@
           testing: false,
           testStatus: "",
           testError: false,
+          lightStatus: "off",
           playingSound: null,
           soundboardStatus: "",
           soundboardError: false,
@@ -498,6 +538,7 @@
               this.isAuthenticated = true;
               await this.loadCommits();
               await this.loadRules();
+              await this.loadLightStatus();
             }
           },
 
@@ -627,6 +668,43 @@
               if (response.status === 401) {
                 this.handleLogout();
               } else if (!response.ok) {
+                const error = await response.json();
+                alert(`Error: ${error.message}`);
+              }
+            } catch (error) {
+              alert(`Error: ${error.message}`);
+            }
+          },
+
+          async loadLightStatus() {
+            try {
+              const response = await fetch("/api/light/status", {
+                headers: this.getAuthHeaders(),
+              });
+              if (response.ok) {
+                const data = await response.json();
+                this.lightStatus = data.state;
+              } else if (response.status === 401) {
+                this.handleLogout();
+              }
+            } catch (error) {
+              console.error("Failed to load light status:", error);
+            }
+          },
+
+          async toggleLight(action) {
+            try {
+              const response = await fetch(`/api/light/${action}`, {
+                method: "POST",
+                headers: this.getAuthHeaders(),
+              });
+
+              if (response.ok) {
+                const data = await response.json();
+                this.lightStatus = data.state;
+              } else if (response.status === 401) {
+                this.handleLogout();
+              } else {
                 const error = await response.json();
                 alert(`Error: ${error.message}`);
               }
