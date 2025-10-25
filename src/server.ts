@@ -165,6 +165,8 @@ app.post("/api/soundboard/:soundId", requireAuth, async (req, res) => {
           ah_shit: Sound.AH_SHIT,
           damn_train: Sound.DAMN_TRAIN,
           drumroll: Sound.DRUM_ROLL,
+          skill_issue: Sound.SKILL_ISSUE,
+          fake_news: Sound.FAKE_NEWS,
         };
 
         const sound = soundMap[soundId];
