@@ -2,15 +2,15 @@ import { exec } from "./utils.js";
 import { existsSync } from "fs";
 
 const LIGHT_PIN = 20;
-const GPIO_BIN = "/home/ubuntu/raspi-gpio/raspi-gpio";
+const GPIO_SCRIPT = "/home/ubuntu/hackweek-the-box/light.py";
 
 let gpioAvailable: boolean | null = null;
 
 function checkGpioAvailable(): boolean {
   if (gpioAvailable === null) {
-    gpioAvailable = existsSync(GPIO_BIN);
+    gpioAvailable = existsSync(GPIO_SCRIPT);
     if (!gpioAvailable) {
-      console.log("GPIO binary not found - light control disabled");
+      console.log("GPIO script not found - light control disabled");
     }
   }
   return gpioAvailable;
@@ -21,8 +21,8 @@ export function initLight() {
 
   console.log("Initializing light beacon");
   try {
-    exec(`${GPIO_BIN} set ${LIGHT_PIN} op`);
-    exec(`${GPIO_BIN} set ${LIGHT_PIN} dh`);
+    exec(`python3 ${GPIO_SCRIPT} set ${LIGHT_PIN} op`);
+    exec(`python3 ${GPIO_SCRIPT} set ${LIGHT_PIN} dh`);
     console.log("Light beacon initialized");
   } catch (e) {
     console.error(e);
@@ -35,7 +35,7 @@ export function lightOn() {
 
   try {
     console.log("Turning light on");
-    exec(`${GPIO_BIN} set ${LIGHT_PIN} dl`);
+    exec(`python3 ${GPIO_SCRIPT} set ${LIGHT_PIN} dl`);
   } catch (e) {
     console.error(e);
     console.log("Error while turning on light pin");
@@ -47,7 +47,7 @@ export function lightOff() {
 
   try {
     console.log("Turning light off");
-    exec(`${GPIO_BIN} set ${LIGHT_PIN} dh`);
+    exec(`python3 ${GPIO_SCRIPT} set ${LIGHT_PIN} dh`);
   } catch (e) {
     console.error(e);
     console.log("Error while turning off light pin");
