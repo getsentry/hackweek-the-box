@@ -2,11 +2,15 @@ import express from "express";
 import { announce } from "./announcement.js";
 import { state } from "./state.js";
 import { Sound, Voice } from "./audio.js";
-import type { AnnouncementConfig } from "./types.js";
+import type { AnnouncementConfig, Commit } from "./types.js";
 import path from "path";
 import { fileURLToPath } from "url";
 import * as Sentry from "@sentry/node";
 import { requireAuth, login, logout } from "./auth.js";
+import { getPR } from "./pr.js";
+import { parseCommit } from "./utils.js";
+import { getAnnouncementConfig } from "./config.js";
+import { lightOn, lightOff, getLightState } from "./light.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -237,6 +241,116 @@ app.post("/api/lunch", requireAuth, async (req, res) => {
             error instanceof Error ? error.message : "Failed to play lunch",
         });
       }
+    }
+  );
+});
+
+// API: Test PR by URL
+app.post("/api/test-pr", requireAuth, async (req, res) => {
+  return Sentry.startSpan(
+    { name: "api.testPR", op: "http.server" },
+    async () => {
+      try {
+        const { prUrl } = req.body;
+        const prMatch = prUrl.match(/\/pull\/(\d+)/);
+        const prNumber = prMatch[1];
+        const pr = await getPR(prNumber);
+
+        const mockCommit: Commit = {
+          id: `test-${prNumber}`,
+          message: pr.title || "",
+          dateCreated: pr.created_at || new Date().toISOString(),
+          author: {
+            id: pr.user?.id?.toString() || "unknown",
+            name: pr.user?.login || "Unknown",
+            username: pr.user?.login || "unknown",
+            email: "",
+          },
+          pr: prNumber,
+          releases: ["test"],
+        };
+
+        const parsedCommit = parseCommit(mockCommit);
+        const rules = await state.rules.getAll();
+        const config = getAnnouncementConfig(parsedCommit, rules);
+
+        if (!config) {
+          // Create a default config for "announce anyway"
+          const defaultConfig: AnnouncementConfig = {
+            message: pr.title || "Pull request",
+            voice: Voice.en_us_001,
+            light: true,
+          };
+
+          res.json({
+            success: true,
+            wouldAnnounce: false,
+            reason: "No matching rules for this commit",
+            commit: mockCommit,
+            parsed: parsedCommit,
+            defaultConfig, // Provide default config for "announce anyway"
+          });
+          return;
+        }
+
+        res.json({
+          success: true,
+          wouldAnnounce: true,
+          config,
+          commit: mockCommit,
+          parsed: parsedCommit,
+        });
+      } catch (error) {
+        console.error("Error testing PR:", error);
+        res.status(500).json({
+          message: error instanceof Error ? error.message : "Failed to test PR",
+        });
+      }
+    }
+  );
+});
+
+app.post("/api/light/on", requireAuth, async (req, res) => {
+  return Sentry.startSpan(
+    { name: "api.lightOn", op: "http.server" },
+    async () => {
+      try {
+        lightOn();
+        res.json({ success: true, state: "on" });
+      } catch (error) {
+        console.error("Error turning light on:", error);
+        res.status(500).json({
+          message:
+            error instanceof Error ? error.message : "Failed to turn light on",
+        });
+      }
+    }
+  );
+});
+
+app.post("/api/light/off", requireAuth, async (req, res) => {
+  return Sentry.startSpan(
+    { name: "api.lightOff", op: "http.server" },
+    async () => {
+      try {
+        lightOff();
+        res.json({ success: true, state: "off" });
+      } catch (error) {
+        console.error("Error turning light off:", error);
+        res.status(500).json({
+          message:
+            error instanceof Error ? error.message : "Failed to turn light off",
+        });
+      }
+    }
+  );
+});
+
+app.get("/api/light/status", requireAuth, async (req, res) => {
+  return Sentry.startSpan(
+    { name: "api.lightStatus", op: "http.server" },
+    async () => {
+      res.json({ state: getLightState() ? "on" : "off" });
     }
   );
 });

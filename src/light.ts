@@ -5,6 +5,15 @@ const LIGHT_PIN = 20;
 const GPIO_SCRIPT = "/home/ubuntu/hackweek-the-box/light.py";
 
 let gpioAvailable: boolean | null = null;
+let lightState = false;
+
+export function getLightState(): boolean {
+  return lightState;
+}
+
+export function setLightState(state: boolean) {
+  lightState = state;
+}
 
 function checkGpioAvailable(): boolean {
   if (gpioAvailable === null) {
@@ -27,6 +36,8 @@ export function initLight() {
   } catch (e) {
     console.error(e);
     console.log("Error while initializing light pin");
+  } finally {
+    setLightState(false);
   }
 }
 
@@ -36,6 +47,7 @@ export function lightOn() {
   try {
     console.log("Turning light on");
     exec(`python3 ${GPIO_SCRIPT} set ${LIGHT_PIN} dl`);
+    setLightState(true);
   } catch (e) {
     console.error(e);
     console.log("Error while turning on light pin");
@@ -48,6 +60,7 @@ export function lightOff() {
   try {
     console.log("Turning light off");
     exec(`python3 ${GPIO_SCRIPT} set ${LIGHT_PIN} dh`);
+    setLightState(false);
   } catch (e) {
     console.error(e);
     console.log("Error while turning off light pin");
