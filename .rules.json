@@ -17,6 +17,14 @@
   },
   {
     "match": {
+      "author": "ognjen.bostjancic@sentry.io"
+    },
+    "play": {
+      "nickname": "O-ghee"
+    }
+  },
+  {
+    "match": {
       "author": "arthur.knaus@sentry.io"
     },
     "play": {
