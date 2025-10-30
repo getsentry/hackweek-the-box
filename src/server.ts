@@ -54,9 +54,30 @@ app.get("/api/commits", requireAuth, async (req, res) => {
     { name: "api.getCommits", op: "http.server" },
     async () => {
       try {
+        const page = parseInt(req.query.page as string) || 1;
+        const limit = parseInt(req.query.limit as string) || 10;
+        const offset = (page - 1) * limit;
+
         const commits = await state.commits.getAll();
         const commitsArray = Object.values(commits);
-        res.json(commitsArray);
+
+        // Sort by dateCreated descending (newest first)
+        const sortedCommits = commitsArray.sort(
+          (a, b) =>
+            new Date(b.dateCreated).getTime() -
+            new Date(a.dateCreated).getTime()
+        );
+
+        // Paginate
+        const paginatedCommits = sortedCommits.slice(offset, offset + limit);
+
+        res.json({
+          commits: paginatedCommits,
+          total: sortedCommits.length,
+          page,
+          limit,
+          totalPages: Math.ceil(sortedCommits.length / limit),
+        });
       } catch (error) {
         console.error("Error fetching commits:", error);
         res.status(500).json({ message: "Failed to fetch commits" });

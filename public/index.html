@@ -134,13 +134,22 @@
 
           <!-- Recent Commits -->
           <div class="bg-neutral-900 shadow-lg border-2 border-amber-600">
-            <div class="px-6 py-4 border-b border-amber-600/50">
+            <div
+              class="px-6 py-4 border-b border-amber-600/50 flex justify-between items-center"
+            >
               <h2 class="text-xl font-semibold text-amber-500">
                 Recent Announcements
               </h2>
+              <div
+                class="text-sm text-neutral-400"
+                x-show="commitsPagination.total > 0"
+              >
+                Page <span x-text="commitsPagination.page"></span> of
+                <span x-text="commitsPagination.totalPages"></span>
+              </div>
             </div>
             <div class="divide-y divide-amber-600/30">
-              <template x-for="commit in commits.slice(0, 10)" :key="commit.id">
+              <template x-for="commit in commits" :key="commit.id">
                 <div
                   class="px-6 py-4 hover:bg-neutral-800/30 transition-colors"
                 >
@@ -169,6 +178,31 @@
                   No announcements yet
                 </div>
               </template>
+            </div>
+            <!-- Pagination Controls -->
+            <div
+              x-show="commitsPagination.totalPages > 1"
+              class="px-6 py-4 border-t border-amber-600/50 flex justify-between items-center"
+            >
+              <button
+                @click="changePage(commitsPagination.page - 1)"
+                :disabled="commitsPagination.page === 1"
+                :class="commitsPagination.page === 1 ? 'opacity-40 cursor-not-allowed' : 'hover:bg-neutral-800/30'"
+                class="px-4 py-2 text-sm text-neutral-300 border-2 border-amber-600 transition-all"
+              >
+                ← Previous
+              </button>
+              <div class="text-sm text-neutral-400">
+                <span x-text="commitsPagination.total"></span> total
+              </div>
+              <button
+                @click="changePage(commitsPagination.page + 1)"
+                :disabled="commitsPagination.page === commitsPagination.totalPages"
+                :class="commitsPagination.page === commitsPagination.totalPages ? 'opacity-40 cursor-not-allowed' : 'hover:bg-neutral-800/30'"
+                class="px-4 py-2 text-sm text-neutral-300 border-2 border-amber-600 transition-all"
+              >
+                Next →
+              </button>
             </div>
           </div>
         </div>
@@ -634,6 +668,12 @@
 
           activeTab: "dashboard",
           commits: [],
+          commitsPagination: {
+            page: 1,
+            limit: 10,
+            total: 0,
+            totalPages: 0,
+          },
           rules: [],
           testMessage: "Hello from The Box!",
           selectedVoice: "en_us_001",
@@ -739,18 +779,34 @@
             return token ? { Authorization: `Bearer ${token}` } : {};
           },
 
-          async loadCommits() {
+          async loadCommits(page = 1) {
             try {
-              const response = await fetch("/api/commits", {
-                headers: this.getAuthHeaders(),
-              });
+              const response = await fetch(
+                `/api/commits?page=${page}&limit=10`,
+                {
+                  headers: this.getAuthHeaders(),
+                }
+              );
               if (response.ok) {
-                this.commits = await response.json();
+                const data = await response.json();
+                this.commits = data.commits;
+                this.commitsPagination = {
+                  page: data.page,
+                  limit: data.limit,
+                  total: data.total,
+                  totalPages: data.totalPages,
+                };
               } else if (response.status === 401) {
                 this.handleLogout();
               }
             } catch (error) {
               console.error("Failed to load commits:", error);
+            }
+          },
+
+          async changePage(newPage) {
+            if (newPage >= 1 && newPage <= this.commitsPagination.totalPages) {
+              await this.loadCommits(newPage);
             }
           },
 
