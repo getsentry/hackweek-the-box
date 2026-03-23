@@ -58,7 +58,7 @@ Available voice categories:
 
 - Node.js native test runner: `--test` flag
 - Tests in `src/tests/*.spec.ts`
-- Mock external APIs (Sentry, GitHub, TikTok)
+- Mock external APIs (GitHub, TikTok)
 - Dev mode: set `NODE_ENV=dev` to announce all commits with test data
 
 Run tests:
@@ -70,7 +70,6 @@ npm test
 ## Environment Variables
 
 ```bash
-SENTRY_DSN=<monitoring>
 SENTRY_TOKEN=<api_auth>
 NODE_ENV=dev  # skips state, announces everything
 PORT=3000     # web server port (default: 3000)
@@ -101,6 +100,5 @@ PORT=3000     # web server port (default: 3000)
 
 - Use explicit types
 - ES modules with `.js` extensions in imports
-- Wrap operations in `Sentry.startSpan()` for observability
 - Always use try/catch for hardware operations
 - Log errors but don't crash

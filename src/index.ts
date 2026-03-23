@@ -1,4 +1,3 @@
-import * as Sentry from "@sentry/node";
 import { config } from "dotenv";
 import { announce } from "./announcement.js";
 import { getAnnouncementConfig } from "./config.js";
@@ -13,15 +12,6 @@ import { parseCommit, runEvery, sleep, getCurrentVersion } from "./utils.js";
 config();
 
 export const main = async () => {
-  console.log("Initializing Sentry...");
-  Sentry.init({
-    dsn: process.env.SENTRY_DSN,
-    tracesSampleRate: 1.0,
-    sampleRate: 1.0,
-    release: "the-box@" + getCurrentVersion(),
-    environment: process.env.NODE_ENV,
-  });
-
   // Initialize light in background (non-blocking)
   setImmediate(() => initLight());
 
@@ -38,25 +28,20 @@ export const main = async () => {
 };
 
 export async function checkForNewCommits() {
-  return Sentry.startSpan(
-    { name: "checkForNewCommits", op: "function" },
-    async () => {
-      console.log(`Checking for new commits (${new Date().toISOString()})`);
-      const commits = await getNewCommits();
+  console.log(`Checking for new commits (${new Date().toISOString()})`);
+  const commits = await getNewCommits();
 
-      if (commits.length === 0) {
-        console.log("No new commits");
-        return;
-      }
+  if (commits.length === 0) {
+    console.log("No new commits");
+    return;
+  }
 
-      const rules = await state.rules.getAll();
+  const rules = await state.rules.getAll();
 
-      for (const commit of commits) {
-        await checkCommit(commit, rules);
-      }
-      console.log(`Finished check (${new Date().toISOString()})`);
-    }
-  );
+  for (const commit of commits) {
+    await checkCommit(commit, rules);
+  }
+  console.log(`Finished check (${new Date().toISOString()})`);
 }
 
 async function checkCommit(commit: Commit, rules: Rule[]) {
@@ -92,47 +77,35 @@ async function checkCommit(commit: Commit, rules: Rule[]) {
 }
 
 async function checkReleaseScope(commit: Commit) {
-  return Sentry.startSpan(
-    { name: "checkReleaseScope", op: "function" },
-    async (span) => {
-      const scopes = await getPRScopes(commit.pr);
-      const releases = commit.releases;
+  const scopes = await getPRScopes(commit.pr);
+  const releases = commit.releases;
 
-      span.setAttributes({ scopes, releases });
+  const frontendMatch = releases.includes("frontend");
+  const backendMatch = releases.includes("backend");
 
-      const frontendMatch = releases.includes("frontend");
-      const backendMatch = releases.includes("backend");
+  if (scopes.includes("frontend") && scopes.includes("backend")) {
+    return frontendMatch && backendMatch;
+  }
 
-      if (scopes.includes("frontend") && scopes.includes("backend")) {
-        return frontendMatch && backendMatch;
-      }
+  if (scopes.includes("frontend")) {
+    return frontendMatch;
+  }
+  if (scopes.includes("backend")) {
+    return backendMatch;
+  }
 
-      if (scopes.includes("frontend")) {
-        return frontendMatch;
-      }
-      if (scopes.includes("backend")) {
-        return backendMatch;
-      }
-
-      return false;
-    }
-  );
+  return false;
 }
 
 async function checkIfAlreadyAnnounced(commit: Commit) {
-  return Sentry.startSpan(
-    { name: "checkIfAlreadyAnnounced", op: "function" },
-    async () => {
-      const previousCommits = await state.commits.getAll();
-      if (previousCommits[commit.id]) {
-        return true;
-      }
-      previousCommits[commit.id] = commit;
-      await state.commits.saveAll(Object.values(previousCommits));
+  const previousCommits = await state.commits.getAll();
+  if (previousCommits[commit.id]) {
+    return true;
+  }
+  previousCommits[commit.id] = commit;
+  await state.commits.saveAll(Object.values(previousCommits));
 
-      return false;
-    }
-  );
+  return false;
 }
 
 function makeTestCommit(commit: Commit): Commit {

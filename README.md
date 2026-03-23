@@ -26,7 +26,6 @@ No build step needed for development! Uses `tsx` for instant TypeScript executio
 Create a `.env` file:
 
 ```bash
-SENTRY_DSN=<your_sentry_dsn>
 SENTRY_TOKEN=<your_sentry_api_token>
 NODE_ENV=production  # or 'dev' for testing
 ```

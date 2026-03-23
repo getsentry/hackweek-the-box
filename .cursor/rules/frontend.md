@@ -135,14 +135,12 @@ Use `:class` binding for dynamic states:
 
 ```typescript
 app.get("/api/resource", async (req, res) => {
-  return Sentry.startSpan({ name: "api.getResource" }, async () => {
-    try {
-      const data = await fetchData();
-      res.json(data);
-    } catch (error) {
-      res.status(500).json({ message: "Error message" });
-    }
-  });
+  try {
+    const data = await fetchData();
+    res.json(data);
+  } catch (error) {
+    res.status(500).json({ message: "Error message" });
+  }
 });
 ```
 
@@ -150,7 +148,6 @@ app.get("/api/resource", async (req, res) => {
 
 - Success: `res.json({ data })` or `res.json(data)` for arrays
 - Error: `res.status(code).json({ message: "Error description" })`
-- Always wrap in Sentry spans
 
 ### Dynamic Grids
 

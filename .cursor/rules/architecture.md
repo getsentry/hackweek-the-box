@@ -7,7 +7,6 @@
 - TTS: TikTok TTS API
 - Storage: lowdb + JSON
 - Hardware: Raspberry Pi GPIO (pin 20)
-- Monitoring: Sentry SDK
 
 ## System Flow
 

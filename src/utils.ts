@@ -1,7 +1,6 @@
 import { sync } from "conventional-commits-parser";
 import type { Commit, CommitType, ParsedCommit } from "./types.js";
 import shelljs from "shelljs";
-import * as Sentry from "@sentry/node";
 import { execSync } from "child_process";
 
 export const sleep = (miliseconds: number) =>
@@ -21,38 +20,36 @@ export const runEvery = (seconds: number, fn: () => Promise<void>) => {
 };
 
 export const parseCommit = (commit: Commit): ParsedCommit => {
-  return Sentry.startSpan({ name: "parseCommit", op: "function" }, () => {
-    try {
-      if (commit.message.startsWith("Revert")) {
-        const originalMessage = commit.message.match(/Revert "(.*)"/)?.[1];
+  try {
+    if (commit.message.startsWith("Revert")) {
+      const originalMessage = commit.message.match(/Revert "(.*)"/)?.[1];
 
-        const parsed = parseCommit({
-          ...commit,
-          message: originalMessage || "",
-        });
+      const parsed = parseCommit({
+        ...commit,
+        message: originalMessage || "",
+      });
 
-        return { ...parsed, type: "revert" };
-      }
-
-      const { type, scope, subject } = sync(commit.message);
-
-      const parsedType = type ? type.trim() : "unknown";
-
-      return {
-        type: parsedType as CommitType,
-        scope: scope ? scope.trim() : undefined,
-        subject: subject ? subject.trim() : commit.message,
-        author: commit.author,
-      };
-    } catch (err) {
-      return {
-        type: "unknown",
-        scope: undefined,
-        subject: commit.message,
-        author: commit.author,
-      };
+      return { ...parsed, type: "revert" };
     }
-  });
+
+    const { type, scope, subject } = sync(commit.message);
+
+    const parsedType = type ? type.trim() : "unknown";
+
+    return {
+      type: parsedType as CommitType,
+      scope: scope ? scope.trim() : undefined,
+      subject: subject ? subject.trim() : commit.message,
+      author: commit.author,
+    };
+  } catch (err) {
+    return {
+      type: "unknown",
+      scope: undefined,
+      subject: commit.message,
+      author: commit.author,
+    };
+  }
 };
 
 export function normalizeString(parameter: unknown): string {

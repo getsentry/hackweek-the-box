@@ -1,27 +1,24 @@
 import axios from "axios";
 import { state } from "./state.js";
-import * as Sentry from "@sentry/node";
 
 const BASE_URL = "https://api.github.com/repos/getsentry/sentry";
 
 export async function getPR(id: string) {
-  return Sentry.startSpan({ name: "getPR", op: "function" }, async () => {
-    // check if we already have the PR in our database
-    const pr = await state.PRs.get(id);
-    if (pr) {
-      return pr;
-    }
+  // check if we already have the PR in our database
+  const pr = await state.PRs.get(id);
+  if (pr) {
+    return pr;
+  }
 
-    // otherwise, fetch it from github
-    try {
-      const res = await axios.get(`${BASE_URL}/pulls/${id}`, {});
-      await state.PRs.save(res.data);
-      return res.data;
-    } catch (error) {
-      console.log(error);
-      return { labels: [{ name: "frontend" }, { name: "backend" }] };
-    }
-  });
+  // otherwise, fetch it from github
+  try {
+    const res = await axios.get(`${BASE_URL}/pulls/${id}`, {});
+    await state.PRs.save(res.data);
+    return res.data;
+  } catch (error) {
+    console.log(error);
+    return { labels: [{ name: "frontend" }, { name: "backend" }] };
+  }
 }
 
 export async function getPRScopes(id: string): Promise<string[]> {

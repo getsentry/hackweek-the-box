@@ -6,7 +6,6 @@ import type {
 } from "./types.js";
 import { Voice, getCommitSound } from "./audio.js";
 import { getAnnounceMessage } from "./message.js";
-import * as Sentry from "@sentry/node";
 
 /*
  * This function takes a commit and a list of rules and returns a PlayConfig
@@ -17,51 +16,39 @@ export function getAnnouncementConfig(
   commit: ParsedCommit,
   rules: Rule[]
 ): AnnouncementConfig | void {
-  return Sentry.startSpan(
-    { name: "getAnnouncementConfig", op: "function" },
-    () => {
-      const ruleDefinedConfig = getConfigFromRules(commit, rules);
+  const ruleDefinedConfig = getConfigFromRules(commit, rules);
 
-      if (!ruleDefinedConfig) {
-        return;
-      }
+  if (!ruleDefinedConfig) {
+    return;
+  }
 
-      const message = getAnnounceMessage(commit, ruleDefinedConfig.nickname);
+  const message = getAnnounceMessage(commit, ruleDefinedConfig.nickname);
 
-      if (!message) {
-        console.error("Could not generate a message");
-        return;
-      }
+  if (!message) {
+    console.error("Could not generate a message");
+    return;
+  }
 
-      return {
-        message,
-        voice: ruleDefinedConfig.voice,
-        sound: ruleDefinedConfig.sound,
-        light: ruleDefinedConfig.light,
-      };
-    }
-  );
+  return {
+    message,
+    voice: ruleDefinedConfig.voice,
+    sound: ruleDefinedConfig.sound,
+    light: ruleDefinedConfig.light,
+  };
 }
 
 function getConfigFromRules(commit: ParsedCommit, rules: Rule[]) {
-  return Sentry.startSpan(
-    { name: "getConfigFromRules", op: "function" },
-    (span) => {
-      const matchingRules = rules.filter((rule) => matches(commit, rule));
+  const matchingRules = rules.filter((rule) => matches(commit, rule));
 
-      span.setAttributes({ matchingRules: matchingRules.length });
+  if (matchingRules.length === 0) {
+    return;
+  }
 
-      if (matchingRules.length === 0) {
-        return;
-      }
+  const config = matchingRules.reduce((acc, rule) => {
+    return { ...acc, ...rule.play };
+  }, getDefaultConfig(commit));
 
-      const config = matchingRules.reduce((acc, rule) => {
-        return { ...acc, ...rule.play };
-      }, getDefaultConfig(commit));
-
-      return config;
-    }
-  );
+  return config;
 }
 
 function matches({ author, type, scope }: ParsedCommit, { match }: Rule) {

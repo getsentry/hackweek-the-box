@@ -24,6 +24,5 @@
 ## Async Patterns
 
 - Always use async/await, never raw promises
-- Wrap main logic in `Sentry.startSpan()` for observability
 - Catch errors gracefully - log but don't crash
 - Hardware operations (light, audio) must have try/catch
