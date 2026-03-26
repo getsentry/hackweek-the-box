@@ -9,7 +9,7 @@
     "start": "tsx src/index.ts",
     "dev": "tsx watch src/index.ts",
     "test": "node --no-warnings --test --loader ts-node/esm ./src/tests/*.spec.ts",
-    "start:prod": "npm run build && node dist/index.js"
+    "start:prod": "npm run build && node --import ./dist/instrument.js dist/index.js"
   },
   "bin": "./dist/cli.js",
   "repository": {
@@ -34,6 +34,8 @@
     "typescript": "^5.1.6"
   },
   "dependencies": {
+    "@sentry/node": "^10.46.0",
+    "@sentry/profiling-node": "^10.46.0",
     "@types/rpi-gpio": "^2.1.1",
     "axios": "^1.4.0",
     "commander": "^11.0.0",

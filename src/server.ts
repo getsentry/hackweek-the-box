@@ -1,4 +1,5 @@
 import express from "express";
+import * as Sentry from "@sentry/node";
 import { announce } from "./announcement.js";
 import { state } from "./state.js";
 import { Sound, Voice } from "./audio.js";
@@ -315,6 +316,9 @@ app.post("/api/light/off", requireAuth, async (req, res) => {
 app.get("/api/light/status", requireAuth, async (req, res) => {
   res.json({ state: getLightState() ? "on" : "off" });
 });
+
+// Sentry error handler — must be after all routes
+Sentry.setupExpressErrorHandler(app);
 
 // Start server
 export function startServer() {

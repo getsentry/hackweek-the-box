@@ -1,3 +1,5 @@
+import "./instrument.js";
+import * as Sentry from "@sentry/node";
 import { config } from "dotenv";
 import { announce } from "./announcement.js";
 import { getAnnouncementConfig } from "./config.js";
@@ -28,20 +30,26 @@ export const main = async () => {
 };
 
 export async function checkForNewCommits() {
-  console.log(`Checking for new commits (${new Date().toISOString()})`);
-  const commits = await getNewCommits();
+  return Sentry.withMonitor("check-for-new-commits", async () => {
+    console.log(`Checking for new commits (${new Date().toISOString()})`);
+    const commits = await getNewCommits();
 
-  if (commits.length === 0) {
-    console.log("No new commits");
-    return;
-  }
+    if (commits.length === 0) {
+      console.log("No new commits");
+      return;
+    }
 
-  const rules = await state.rules.getAll();
+    const rules = await state.rules.getAll();
 
-  for (const commit of commits) {
-    await checkCommit(commit, rules);
-  }
-  console.log(`Finished check (${new Date().toISOString()})`);
+    for (const commit of commits) {
+      await checkCommit(commit, rules);
+    }
+    console.log(`Finished check (${new Date().toISOString()})`);
+  }, {
+    schedule: { type: "interval", value: 1, unit: "minute" },
+    checkinMargin: 2,
+    maxRuntime: 5,
+  });
 }
 
 async function checkCommit(commit: Commit, rules: Rule[]) {
